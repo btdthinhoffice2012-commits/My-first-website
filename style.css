@@ -1526,11 +1526,22 @@ body.dark .skill-card:hover .skill-icon-wrapper {
     border-bottom: 0.5rem solid transparent;
 }
 
+.film-controls.playing span::before {
+    border: none;
+    width: 0.75rem;
+    height: 1rem;
+    border-left: 0.25rem solid #0f172a;
+    border-right: 0.25rem solid #0f172a;
+    left: 0.78rem;
+    top: 0.65rem;
+    box-sizing: border-box;
+}
+
 .film-controls div {
     flex: 1;
     height: 0.45rem;
     border-radius: 999px;
-    background: linear-gradient(90deg, #38bdf8 0 48%, rgba(255, 255, 255, 0.14) 48% 100%);
+    background: linear-gradient(90deg, #38bdf8 0 var(--video-progress, 0%), rgba(255, 255, 255, 0.14) var(--video-progress, 0%) 100%);
 }
 
 .gear-list-section,

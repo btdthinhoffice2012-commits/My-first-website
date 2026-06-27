@@ -649,4 +649,49 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 400);
         }, 4000);
     }
+
+    // --- Setup Video Controller ---
+    const setupVideo = document.getElementById('setup-video');
+    const videoControls = document.getElementById('setup-video-controls');
+    const videoPlayBtn = document.getElementById('setup-video-play');
+    const videoProgress = document.getElementById('setup-video-progress');
+
+    if (setupVideo && videoControls && videoPlayBtn && videoProgress) {
+        const togglePlay = () => {
+            if (setupVideo.paused) {
+                setupVideo.play().catch(err => console.log('Autoplay issue:', err));
+            } else if (setupVideo.muted) {
+                setupVideo.muted = false;
+                showToast('Đã bật âm thanh video! 🔊');
+            } else {
+                setupVideo.pause();
+            }
+        };
+
+        videoPlayBtn.addEventListener('click', togglePlay);
+        setupVideo.addEventListener('click', togglePlay);
+        
+        // Listen to native events to sync UI state
+        setupVideo.addEventListener('play', () => {
+            videoControls.classList.add('playing');
+        });
+
+        setupVideo.addEventListener('pause', () => {
+            videoControls.classList.remove('playing');
+        });
+
+        setupVideo.addEventListener('timeupdate', () => {
+            if (setupVideo.duration) {
+                const progress = (setupVideo.currentTime / setupVideo.duration) * 100;
+                videoControls.style.setProperty('--video-progress', `${progress}%`);
+            }
+        });
+
+        // Click on progress bar to seek
+        videoProgress.addEventListener('click', (e) => {
+            const rect = videoProgress.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            setupVideo.currentTime = pos * setupVideo.duration;
+        });
+    }
 });
