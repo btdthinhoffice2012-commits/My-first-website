@@ -1,0 +1,19 @@
+{
+  "name": "my-first-website",
+  "version": "1.0.0",
+  "description": "Portfolio cá nhân của Bùi Trần Đức Thịnh - Developer & Linux Fan",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "portfolio",
+    "website"
+  ],
+  "author": "Bùi Trần Đức Thịnh",
+  "license": "ISC",
+  "packageManager": "pnpm@10.34.3",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
