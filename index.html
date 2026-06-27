@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Trang web giới thiệu cá nhân chuyên nghiệp của Thịnh - Kỹ sư phần mềm & Nhà thiết kế Web.">
-    <title>Thịnh | Portfolio Cá Nhân Chuyên Nghiệp</title>
+    <meta name="description" content="Trang web giới thiệu cá nhân chuyên nghiệp của Bùi Trần Đức Thịnh - Developer & Linux Fan.">
+    <meta name="theme-color" content="#0f2b46">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Bùi Trần Đức Thịnh | Developer & Linux Fan">
+    <meta property="og:description" content="Portfolio cá nhân về C++, Linux, GitHub và các dự án học tập công nghệ.">
+    <meta property="og:image" content="avater1.jpeg">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Bùi Trần Đức Thịnh | Portfolio Cá Nhân Chuyên Nghiệp</title>
+    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230f2b46"/><text x="50%" y="57%" text-anchor="middle" font-size="30" font-family="Arial" font-weight="700" fill="%2338bdf8">ĐT</text></svg>'>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,22 +22,31 @@
 <body>
     <!-- Scroll Progress Bar -->
     <div id="scroll-progress"></div>
+    <div class="interactive-bg" aria-hidden="true">
+        <canvas id="background-canvas"></canvas>
+    </div>
 
     <!-- Header Navigation -->
     <header class="header">
         <div class="container header-container">
             <a href="#" class="logo">
-                <span class="logo-dot"></span>Thịnh<span>.</span>
+                <span class="logo-dot"></span>Đức Thịnh<span>.</span>
             </a>
             <nav class="nav">
                 <ul class="nav-list">
                     <li><a href="#hero" class="nav-link active">Trang Chủ</a></li>
                     <li><a href="#about" class="nav-link">Giới Thiệu</a></li>
                     <li><a href="#skills" class="nav-link">Kỹ Năng</a></li>
+                    <li><a href="#projects" class="nav-link">Dự Án</a></li>
+                    <li><a href="gear.html" class="nav-link">Setup</a></li>
                     <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
                 </ul>
             </nav>
             <div class="nav-actions">
+                <button id="performance-toggle" aria-label="Chế độ hiệu năng" class="theme-btn performance-btn" title="Chế độ hiệu năng">
+                    <svg class="performance-on-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 8h9l-9 12 2-8H4z"></path></svg>
+                    <svg class="performance-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 18.36A9 9 0 1 1 5.64 5.64"></path><path d="m2 2 20 20"></path></svg>
+                </button>
                 <button id="theme-toggle" aria-label="Chuyển đổi giao diện" class="theme-btn">
                     <!-- Sun Icon -->
                     <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
@@ -54,20 +70,52 @@
             <div class="container hero-container">
                 <div class="hero-content">
                     <span class="hero-subtitle">Xin chào, tôi là</span>
-                    <h1 class="hero-title">Thịnh</h1>
-                    <h2 class="hero-role"><span class="typewriter" data-words='["Software Engineer", "Web Developer", "UI/UX Enthusiast"]'></span><span class="cursor">|</span></h2>
+                    <h1 class="hero-title">Bùi Trần Đức Thịnh</h1>
+                    <h2 class="hero-role"><span class="typewriter" data-words='["Software Engineer", "Developer & Linux Fan", "Linux Enthusiast"]'></span><span class="cursor">|</span></h2>
                     <p class="hero-desc">
-                        Tôi kiến tạo các trải nghiệm web hiện đại, mượt mà và tập trung vào trải nghiệm người dùng. Với sự kết hợp giữa tư duy logic và thẩm mỹ thiết kế, tôi biến các ý tưởng phức tạp thành sản phẩm số tinh tế.
+                        Mình xây dựng thói quen học công nghệ mỗi ngày qua C++, Linux và các dự án nhỏ. Mình thích hiểu cách hệ thống vận hành, tối ưu workflow và biến ý tưởng thành sản phẩm có thể dùng được.
                     </p>
+                    <div class="hero-badges" aria-label="Công nghệ yêu thích">
+                        <span>C++</span>
+                        <span>Linux</span>
+                        <span>GitHub</span>
+                        <span>Open Source</span>
+                    </div>
                     <div class="hero-actions">
-                        <a href="#contact" class="btn btn-primary">Liên Hệ Ngay</a>
-                        <a href="#skills" class="btn btn-secondary">Khám Phá Kỹ Năng</a>
+                        <a href="#projects" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>
+                            Xem Dự Án
+                        </a>
+                        <a href="#contact" class="btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            Liên Hệ
+                        </a>
+                    </div>
+                    <div class="hero-terminal" aria-label="Mini terminal tương tác">
+                        <div class="hero-terminal-top">
+                            <div class="terminal-dots" aria-hidden="true">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <span class="terminal-title">thinh@portfolio:~</span>
+                        </div>
+                        <div class="terminal-output">
+                            <p><span class="terminal-prompt">$</span> <span id="terminal-command">whoami</span></p>
+                            <p id="terminal-response">student developer | Linux fan | C++ learner</p>
+                        </div>
+                        <div class="terminal-actions" aria-label="Chạy lệnh nhanh">
+                            <button type="button" class="terminal-command-btn active" data-command="whoami">whoami</button>
+                            <button type="button" class="terminal-command-btn" data-command="skills">skills</button>
+                            <button type="button" class="terminal-command-btn" data-command="projects">projects</button>
+                            <button type="button" class="terminal-command-btn" data-command="contact">contact</button>
+                        </div>
                     </div>
                 </div>
                 <div class="hero-image-wrapper">
                     <div class="avatar-glow"></div>
                     <div class="avatar-container">
-                        <img src="avatar.jpg" alt="Thịnh Avatar" class="avatar-img">
+                        <img src="avater1.jpeg" alt="Bùi Trần Đức Thịnh Avatar" class="avatar-img">
                     </div>
                 </div>
             </div>
@@ -81,28 +129,47 @@
                     <h2 class="section-title">Câu Chuyện Của Tôi</h2>
                     <div class="section-divider"></div>
                 </div>
-                <div class="about-grid">
-                    <div class="about-text">
-                        <p>
-                            Là một nhà phát triển web đầy nhiệt huyết, tôi luôn đặt sự hoàn mỹ và hiệu năng lên hàng đầu. Mỗi dòng code tôi viết không chỉ để chạy được, mà còn hướng tới sự tối ưu, sạch sẽ và dễ dàng bảo trì.
-                        </p>
-                        <p>
-                            Tôi luôn cập nhật các công nghệ mới nhất để mang lại những giải pháp tiên tiến nhất cho khách hàng và doanh nghiệp.
-                        </p>
+                <div class="about-text">
+                    <p>
+                        Chào mọi người, mình là Thịnh, sinh năm 2012. Mình có niềm đam mê đặc biệt với lập trình, nhất là ngôn ngữ C++.
+                    </p>
+                    <p>
+                        Với mình, lập trình không chỉ là những dòng code, mà còn là hành trình tư duy không ngừng nghỉ, giống như vòng lặp <code>while (true) { keep_improving(); }</code> – luôn nỗ lực để hoàn thiện bản thân mỗi ngày.
+                    </p>
+                    <p>
+                        Rất vui khi các bạn đến với website của mình!
+                    </p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <strong>3+</strong>
+                        <span>Dự án đang xây</span>
                     </div>
-                    <div class="about-stats">
-                        <div class="stat-card">
-                            <span class="stat-num">3+</span>
-                            <span class="stat-label">Năm kinh nghiệm</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-num">20+</span>
-                            <span class="stat-label">Dự án hoàn thành</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-num">100%</span>
-                            <span class="stat-label">Khách hàng hài lòng</span>
-                        </div>
+                    <div class="stat-card">
+                        <strong>C++</strong>
+                        <span>Ngôn ngữ trọng tâm</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong>Linux</strong>
+                        <span>Dùng hằng ngày</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong>2026</strong>
+                        <span>Tiếp tục nâng cấp</span>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span>Hiện tại</span>
+                        <p>Luyện C++, tối ưu Linux workflow và hoàn thiện portfolio cá nhân.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span>Đang học</span>
+                        <p>Cấu trúc dữ liệu, thuật toán cơ bản, Git/GitHub và cách debug hiệu quả.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span>Mục tiêu</span>
+                        <p>Xây thêm dự án thật, public repo rõ ràng và biến kiến thức thành sản phẩm dùng được.</p>
                     </div>
                 </div>
             </div>
@@ -117,53 +184,141 @@
                     <div class="section-divider"></div>
                 </div>
                 <div class="skills-grid">
-                    <!-- Skill Card 1: Frontend -->
+                    <!-- Skill Card 1: Linux & System Optimization -->
+                    <div class="skill-card">
+                        <div class="skill-icon-wrapper">
+                            <!-- Terminal Icon SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        </div>
+                        <h3>Linux & System Optimization</h3>
+                        <p>Tối ưu hóa hiệu năng hệ thống, tùy biến môi trường làm việc và làm chủ các công cụ dòng lệnh.</p>
+                        <ul class="skill-tags">
+                            <li>Linux (Arch/CachyOS)</li>
+                            <li>Bash Scripting</li>
+                            <li>System Tuning</li>
+                            <li>Terminal Workflow</li>
+                        </ul>
+                    </div>
+
+                    <!-- Skill Card 2: Programming Fundamentals -->
                     <div class="skill-card">
                         <div class="skill-icon-wrapper">
                             <!-- Code Icon SVG -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
                         </div>
-                        <h3>Front-End Development</h3>
-                        <p>Tạo ra các giao diện người dùng mượt mà, phản hồi tốt trên mọi thiết bị và tối ưu hóa SEO.</p>
+                        <h3>Programming Fundamentals</h3>
+                        <p>Xây dựng tư duy giải quyết vấn đề thông qua code và hiểu sâu về cách chương trình hoạt động.</p>
                         <ul class="skill-tags">
-                            <li>HTML5 & CSS3</li>
-                            <li>JavaScript (ES6+)</li>
-                            <li>React.js / Next.js</li>
-                            <li>Responsive Design</li>
+                            <li>C/C++</li>
+                            <li>Data Structures</li>
+                            <li>Algorithms</li>
+                            <li>Problem Solving</li>
                         </ul>
                     </div>
 
-                    <!-- Skill Card 2: Backend -->
+                    <!-- Skill Card 3: Tools & Exploration -->
                     <div class="skill-card">
                         <div class="skill-icon-wrapper">
-                            <!-- Server Icon SVG -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                            <!-- CPU Icon SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="15" x2="23" y2="15"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="15" x2="4" y2="15"></line></svg>
                         </div>
-                        <h3>Back-End Development</h3>
-                        <p>Xây dựng hệ thống máy chủ mạnh mẽ, bảo mật cao và API hiệu năng tốt cho ứng dụng.</p>
+                        <h3>Tools & Exploration</h3>
+                        <p>Quản lý quy trình làm việc, tìm hiểu sâu về phần cứng và các công cụ phát triển phần mềm.</p>
                         <ul class="skill-tags">
-                            <li>Node.js / Express</li>
-                            <li>RESTful API</li>
-                            <li>PostgreSQL / MongoDB</li>
-                            <li>Authentication (JWT)</li>
-                        </ul>
-                    </div>
-
-                    <!-- Skill Card 3: UI/UX & Tools -->
-                    <div class="skill-card">
-                        <div class="skill-icon-wrapper">
-                            <!-- PenTool Icon SVG -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        </div>
-                        <h3>UI/UX & Tools</h3>
-                        <p>Thiết kế sản phẩm trực quan, quy trình làm việc hiện đại và quản lý mã nguồn chuyên nghiệp.</p>
-                        <ul class="skill-tags">
-                            <li>Figma</li>
                             <li>Git & GitHub</li>
-                            <li>Docker</li>
-                            <li>UI/UX Principles</li>
+                            <li>Hardware Knowledge</li>
+                            <li>Debug & Troubleshooting</li>
+                            <li>Open Source</li>
                         </ul>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects-section reveal">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Sản Phẩm</span>
+                    <h2 class="section-title">Dự Án Nổi Bật</h2>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="projects-grid">
+                    <article class="project-card tilt-card">
+                        <div class="project-visual terminal-visual">
+                            <div class="terminal-bar">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="terminal-lines">
+                                <span>$ sudo tune-system</span>
+                                <span>cpu governor: performance</span>
+                                <span>workflow: optimized</span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span>Linux</span>
+                                <span>Workflow</span>
+                            </div>
+                            <h3>Linux Performance Lab</h3>
+                            <p>Bộ ghi chú và thử nghiệm cá nhân về tối ưu hệ thống, terminal workflow, shell script và cách setup môi trường làm việc nhanh hơn.</p>
+                            <div class="project-actions">
+                                <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
+                                <a href="#contact">Trao đổi</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="project-card tilt-card featured-project">
+                        <div class="project-visual code-visual">
+                            <div class="code-grid">
+                                <span>int main()</span>
+                                <span>{ solve(); }</span>
+                                <span>return 0;</span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span>C++</span>
+                                <span>Algorithms</span>
+                            </div>
+                            <h3>C++ Practice Engine</h3>
+                            <p>Không gian luyện tư duy lập trình với bài tập nhỏ, cấu trúc dữ liệu và thuật toán cơ bản để cải thiện tốc độ giải quyết vấn đề.</p>
+                            <div class="project-actions">
+                                <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
+                                <a href="#skills">Kỹ năng</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="project-card tilt-card">
+                        <div class="project-visual portfolio-visual">
+                            <div class="browser-frame">
+                                <span></span>
+                                <div></div>
+                            </div>
+                            <div class="portfolio-preview">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span>HTML</span>
+                                <span>CSS</span>
+                                <span>JS</span>
+                            </div>
+                            <h3>Interactive Portfolio</h3>
+                            <p>Website cá nhân có dark mode, animation nền tương tác, hiệu ứng reveal, typewriter và form liên hệ mô phỏng.</p>
+                            <div class="project-actions">
+                                <a href="#hero">Demo</a>
+                                <a href="#contact">Liên hệ</a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
             </div>
         </section>
@@ -187,7 +342,7 @@
                                 </div>
                                 <div class="contact-text">
                                     <span>Email</span>
-                                    <a href="mailto:thinh@example.com">thinh@example.com</a>
+                                    <a href="mailto:btd.thinhoffice2012@gmail.com">btd.thinhoffice2012@gmail.com</a>
                                 </div>
                             </div>
                             <div class="contact-item">
@@ -196,7 +351,7 @@
                                 </div>
                                 <div class="contact-text">
                                     <span>Điện thoại</span>
-                                    <a href="tel:+84123456789">+84 123 456 789</a>
+                                    <a href="tel:0967505247">0967505247</a>
                                 </div>
                             </div>
                             <div class="contact-item">
@@ -205,7 +360,34 @@
                                 </div>
                                 <div class="contact-text">
                                     <span>Địa điểm</span>
-                                    <p>Hồ Chí Minh, Việt Nam</p>
+                                    <p>TP Huế, Việt Nam</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>Zalo</span>
+                                    <a href="https://zalo.me/0967505247" target="_blank" rel="noopener noreferrer">zalo.me/0967505247</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>Facebook</span>
+                                    <a href="https://www.facebook.com/profile.php?id=61577763750509" target="_blank" rel="noopener noreferrer">facebook.com/profile.php?id=61577763750509</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>GitHub</span>
+                                    <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer">github.com/btdthinhoffice2012-commits</a>
                                 </div>
                             </div>
                         </div>
@@ -217,7 +399,7 @@
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" required placeholder="name@example.com">
+                            <input type="email" id="email" required placeholder="btd.thinhoffice2012@gmail.com">
                         </div>
                         <div class="form-group">
                             <label for="message">Lời nhắn</label>
@@ -234,18 +416,35 @@
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-brand">
-                <a href="#" class="logo"><span class="logo-dot"></span>Thịnh<span>.</span></a>
-                <p>Thiết kế & Lập trình bởi Thịnh © 2026. Mọi quyền được bảo lưu.</p>
+                <a href="#" class="logo"><span class="logo-dot"></span>Đức Thịnh<span>.</span></a>
+                <p>Thiết kế & Lập trình bởi Bùi Trần Đức Thịnh © 2026. Mọi quyền được bảo lưu.</p>
+                <div class="footer-status">
+                    <span></span>
+                    <p>Đang mở để học hỏi, hợp tác và trao đổi ý tưởng.</p>
+                </div>
+            </div>
+            <div class="footer-links" aria-label="Liên kết nhanh">
+                <a href="#about">Giới thiệu</a>
+                <a href="#skills">Kỹ năng</a>
+                <a href="#projects">Dự án</a>
+                <a href="#contact">Liên hệ</a>
+            </div>
+            <div class="footer-qr">
+                <img src="qr-code.png" alt="QR Code Liên Hệ" class="qr-code-img">
+                <p>Quét QR để liên hệ</p>
             </div>
             <div class="footer-socials">
-                <a href="#" aria-label="GitHub" class="social-link">
+                <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                 </a>
-                <a href="#" aria-label="LinkedIn" class="social-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                <a href="https://www.facebook.com/profile.php?id=61577763750509" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                 </a>
-                <a href="#" aria-label="Twitter" class="social-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                <a href="https://www.instagram.com/thinh.office.2012/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </a>
+                <a href="https://x.com/Thinhoffice2012" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M20 4L7.5 20"/></svg>
                 </a>
             </div>
         </div>
