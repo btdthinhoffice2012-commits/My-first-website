@@ -1,1 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang web giới thiệu cá nhân chuyên nghiệp của Thịnh - Kỹ sư phần mềm & Nhà thiết kế Web.">
+    <title>Thịnh | Portfolio Cá Nhân Chuyên Nghiệp</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress"></div>
 
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <span class="logo-dot"></span>Thịnh<span>.</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="#hero" class="nav-link active">Trang Chủ</a></li>
+                    <li><a href="#about" class="nav-link">Giới Thiệu</a></li>
+                    <li><a href="#skills" class="nav-link">Kỹ Năng</a></li>
+                    <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <button id="theme-toggle" aria-label="Chuyển đổi giao diện" class="theme-btn">
+                    <!-- Sun Icon -->
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+                    <!-- Moon Icon -->
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+                </button>
+                <button class="mobile-nav-toggle" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="decor-blob blob-1"></div>
+            <div class="decor-blob blob-2"></div>
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <span class="hero-subtitle">Xin chào, tôi là</span>
+                    <h1 class="hero-title">Thịnh</h1>
+                    <h2 class="hero-role"><span class="typewriter" data-words='["Software Engineer", "Web Developer", "UI/UX Enthusiast"]'></span><span class="cursor">|</span></h2>
+                    <p class="hero-desc">
+                        Tôi kiến tạo các trải nghiệm web hiện đại, mượt mà và tập trung vào trải nghiệm người dùng. Với sự kết hợp giữa tư duy logic và thẩm mỹ thiết kế, tôi biến các ý tưởng phức tạp thành sản phẩm số tinh tế.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#contact" class="btn btn-primary">Liên Hệ Ngay</a>
+                        <a href="#skills" class="btn btn-secondary">Khám Phá Kỹ Năng</a>
+                    </div>
+                </div>
+                <div class="hero-image-wrapper">
+                    <div class="avatar-glow"></div>
+                    <div class="avatar-container">
+                        <img src="avatar.jpg" alt="Thịnh Avatar" class="avatar-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section (Intro summary) -->
+        <section id="about" class="about-section reveal">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Về Bản Thân</span>
+                    <h2 class="section-title">Câu Chuyện Của Tôi</h2>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="about-grid">
+                    <div class="about-text">
+                        <p>
+                            Là một nhà phát triển web đầy nhiệt huyết, tôi luôn đặt sự hoàn mỹ và hiệu năng lên hàng đầu. Mỗi dòng code tôi viết không chỉ để chạy được, mà còn hướng tới sự tối ưu, sạch sẽ và dễ dàng bảo trì.
+                        </p>
+                        <p>
+                            Tôi luôn cập nhật các công nghệ mới nhất để mang lại những giải pháp tiên tiến nhất cho khách hàng và doanh nghiệp.
+                        </p>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <span class="stat-num">3+</span>
+                            <span class="stat-label">Năm kinh nghiệm</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">20+</span>
+                            <span class="stat-label">Dự án hoàn thành</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">100%</span>
+                            <span class="stat-label">Khách hàng hài lòng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="skills-section reveal">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Chuyên Môn</span>
+                    <h2 class="section-title">Kỹ Năng Của Tôi</h2>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="skills-grid">
+                    <!-- Skill Card 1: Frontend -->
+                    <div class="skill-card">
+                        <div class="skill-icon-wrapper">
+                            <!-- Code Icon SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        </div>
+                        <h3>Front-End Development</h3>
+                        <p>Tạo ra các giao diện người dùng mượt mà, phản hồi tốt trên mọi thiết bị và tối ưu hóa SEO.</p>
+                        <ul class="skill-tags">
+                            <li>HTML5 & CSS3</li>
+                            <li>JavaScript (ES6+)</li>
+                            <li>React.js / Next.js</li>
+                            <li>Responsive Design</li>
+                        </ul>
+                    </div>
+
+                    <!-- Skill Card 2: Backend -->
+                    <div class="skill-card">
+                        <div class="skill-icon-wrapper">
+                            <!-- Server Icon SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        </div>
+                        <h3>Back-End Development</h3>
+                        <p>Xây dựng hệ thống máy chủ mạnh mẽ, bảo mật cao và API hiệu năng tốt cho ứng dụng.</p>
+                        <ul class="skill-tags">
+                            <li>Node.js / Express</li>
+                            <li>RESTful API</li>
+                            <li>PostgreSQL / MongoDB</li>
+                            <li>Authentication (JWT)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Skill Card 3: UI/UX & Tools -->
+                    <div class="skill-card">
+                        <div class="skill-icon-wrapper">
+                            <!-- PenTool Icon SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <h3>UI/UX & Tools</h3>
+                        <p>Thiết kế sản phẩm trực quan, quy trình làm việc hiện đại và quản lý mã nguồn chuyên nghiệp.</p>
+                        <ul class="skill-tags">
+                            <li>Figma</li>
+                            <li>Git & GitHub</li>
+                            <li>Docker</li>
+                            <li>UI/UX Principles</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section reveal">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Kết Nối</span>
+                    <h2 class="section-title">Liên Hệ Với Tôi</h2>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3>Hãy bắt đầu dự án tiếp theo của bạn!</h3>
+                        <p>Bạn có một ý tưởng thú vị hoặc muốn cùng hợp tác phát triển sản phẩm? Hãy gửi lời nhắn cho tôi.</p>
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>Email</span>
+                                    <a href="mailto:thinh@example.com">thinh@example.com</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>Điện thoại</span>
+                                    <a href="tel:+84123456789">+84 123 456 789</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>Địa điểm</span>
+                                    <p>Hồ Chí Minh, Việt Nam</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Họ và Tên</label>
+                            <input type="text" id="name" required placeholder="Họ và tên của bạn">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required placeholder="name@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Lời nhắn</label>
+                            <textarea id="message" rows="5" required placeholder="Lời nhắn của bạn..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-submit">Gửi Lời Nhắn</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <a href="#" class="logo"><span class="logo-dot"></span>Thịnh<span>.</span></a>
+                <p>Thiết kế & Lập trình bởi Thịnh © 2026. Mọi quyền được bảo lưu.</p>
+            </div>
+            <div class="footer-socials">
+                <a href="#" aria-label="GitHub" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                </a>
+                <a href="#" aria-label="LinkedIn" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="#" aria-label="Twitter" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll To Top Button -->
+    <button id="scroll-to-top" aria-label="Lên đầu trang">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+
+    <!-- Script JS -->
+    <script src="script.js"></script>
+</body>
+</html>
