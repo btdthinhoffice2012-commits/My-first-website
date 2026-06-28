@@ -41,6 +41,7 @@
                     <li><a href="#setup" class="nav-link">Setup</a></li>
                     <li><a href="#hobbies" class="nav-link">Sở Thích</a></li>
                     <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
+                    <li><a href="#feedback" class="nav-link">Đánh Giá</a></li>
                 </ul>
             </nav>
             <div class="nav-actions">
@@ -738,6 +739,71 @@
                 </div>
             </div>
         </section>
+
+        <!-- Feedback Section -->
+        <section id="feedback" class="feedback-section reveal">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Đánh Giá</span>
+                    <h2 class="section-title">Ý Kiến & Phản Hồi</h2>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="feedback-container">
+                    <form class="feedback-form" id="feedbackForm">
+                        <p class="feedback-desc">Ý kiến của bạn là động lực để tôi hoàn thiện bản thân mỗi ngày. Hãy để lại đánh giá của bạn nhé!</p>
+                        
+                        <div class="feedback-row">
+                            <div class="form-group">
+                                <label for="feedback-name">Họ và Tên</label>
+                                <input type="text" id="feedback-name" required placeholder="Nhập họ và tên của bạn">
+                            </div>
+                            <div class="form-group">
+                                <label for="feedback-email">Email</label>
+                                <input type="email" id="feedback-email" required placeholder="email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="feedback-phone">Số Điện Thoại</label>
+                                <input type="tel" id="feedback-phone" required placeholder="Nhập số điện thoại của bạn" pattern="[0-9]{10,11}">
+                            </div>
+                        </div>
+
+                        <div class="form-group rating-group">
+                            <label>Đánh giá mức độ hài lòng</label>
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="rating" value="5" required />
+                                <label for="star5" title="Tuyệt vời">
+                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                </label>
+                                <input type="radio" id="star4" name="rating" value="4" />
+                                <label for="star4" title="Tốt">
+                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                </label>
+                                <input type="radio" id="star3" name="rating" value="3" />
+                                <label for="star3" title="Bình thường">
+                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                </label>
+                                <input type="radio" id="star2" name="rating" value="2" />
+                                <label for="star2" title="Tệ">
+                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                </label>
+                                <input type="radio" id="star1" name="rating" value="1" />
+                                <label for="star1" title="Rất tệ">
+                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                </label>
+                            </div>
+                            <span class="rating-badge" id="feedbackRatingLabel">Chọn đánh giá</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedback-message">Nội dung phản hồi</label>
+                            <textarea id="feedback-message" rows="4" required placeholder="Nhập ý kiến đóng góp của bạn ở đây..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-submit">Gửi Đánh Giá</button>
+                    </form>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -758,6 +824,7 @@
                 <a href="#setup">Setup</a>
                 <a href="#hobbies">Sở thích</a>
                 <a href="#contact">Liên hệ</a>
+                <a href="#feedback">Đánh giá</a>
             </div>
             <div class="footer-qr">
                 <img src="qr-code.png" alt="QR Code Liên Hệ" class="qr-code-img">

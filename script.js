@@ -573,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Reveal Elements on Scroll (Intersection Observer) ---
     const revealElements = document.querySelectorAll('.reveal');
-    const revealChildren = document.querySelectorAll('.skill-card, .project-card, .gear-card, .stat-card, .timeline-item, .flow-steps div, .contact-item');
+    const revealChildren = document.querySelectorAll('.skill-card, .project-card, .gear-card, .stat-card, .timeline-item, .flow-steps div, .contact-item, .feedback-form, .rating-group');
 
     revealChildren.forEach((child, index) => {
         child.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
@@ -795,7 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let isInstant = false;
 
         if (lowerCmd === 'help') {
-            response = 'Available commands: whoami, skills, projects, contact, neofetch, snake (chơi game), clear, hello';
+            response = 'Available commands: whoami, skills, projects, contact, feedback (đánh giá), neofetch, snake (chơi game), clear, hello';
         } else if (lowerCmd === 'hello') {
             response = 'Hi there! Thanks for visiting my tech station. Have a great day!';
         } else if (lowerCmd === 'whoami') {
@@ -806,6 +806,8 @@ document.addEventListener('DOMContentLoaded', () => {
             response = '3 active builds:\n- Linux Performance Lab\n- C++ Practice Engine\n- Tech Command Portfolio\nType or click them for info!';
         } else if (lowerCmd === 'contact') {
             response = 'email: btd.thinhoffice2012@gmail.com\nzalo: 0967505247\nphone: 0967505247';
+        } else if (lowerCmd === 'feedback') {
+            response = 'Bạn có thể để lại ý kiến đóng góp và đánh giá 5 sao ở mục Đánh Giá cuối trang!';
         } else if (lowerCmd === 'neofetch') {
             response = `      /\\        thinh@THINH-PC
      /  \\       --------------
@@ -979,6 +981,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Show floating custom toast alert
                 showToast('Cảm ơn bạn! Lời nhắn của bạn đã được gửi thành công.');
+            }, 1500);
+        });
+    }
+    
+    // --- Feedback Form Interactive Submission Handler ---
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackStars = document.querySelectorAll('.star-rating input[name="rating"]');
+    const feedbackRatingLabel = document.getElementById('feedbackRatingLabel');
+
+    if (feedbackStars.length > 0 && feedbackRatingLabel) {
+        const ratingTexts = {
+            '1': 'Rất tệ (1/5 ★)',
+            '2': 'Tệ (2/5 ★)',
+            '3': 'Bình thường (3/5 ★)',
+            '4': 'Tốt (4/5 ★)',
+            '5': 'Tuyệt vời (5/5 ★)'
+        };
+        
+        feedbackStars.forEach(star => {
+            star.addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (ratingTexts[val]) {
+                    feedbackRatingLabel.textContent = ratingTexts[val];
+                    feedbackRatingLabel.classList.add('show');
+                }
+            });
+        });
+    }
+
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const submitBtn = feedbackForm.querySelector('.btn-submit');
+            const originalBtnText = submitBtn.textContent;
+            
+            // Visual feedback - loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang gửi...';
+            submitBtn.style.opacity = '0.7';
+            
+            // Mock server timeout
+            setTimeout(() => {
+                // Success feedback
+                submitBtn.textContent = 'Gửi thành công!';
+                submitBtn.style.backgroundColor = '#10b981'; // green color
+                submitBtn.style.color = '#ffffff';
+
+                // Clear fields
+                feedbackForm.reset();
+                if (feedbackRatingLabel) {
+                    feedbackRatingLabel.textContent = 'Chọn đánh giá';
+                    feedbackRatingLabel.classList.remove('show');
+                }
+                
+                // Restore button state after 3 seconds
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalBtnText;
+                    submitBtn.style.backgroundColor = '';
+                    submitBtn.style.color = '';
+                    submitBtn.style.opacity = '';
+                }, 3000);
+                
+                // Show floating custom toast alert
+                showToast('Cảm ơn phản hồi của bạn! Đánh giá đã được gửi thành công.');
             }, 1500);
         });
     }

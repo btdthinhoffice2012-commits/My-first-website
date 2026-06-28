@@ -1919,6 +1919,148 @@ body.dark .skill-card:hover .skill-icon-wrapper {
     background-color: rgba(248, 250, 252, 0.94);
 }
 
+/* --- Feedback Section --- */
+.feedback-section {
+    padding: 6rem 0;
+    background-color: var(--bg-primary);
+    position: relative;
+    z-index: 1;
+}
+
+.feedback-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.feedback-desc {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+}
+
+.feedback-form {
+    background: rgba(255, 255, 255, 0.76);
+    padding: 3rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(37, 99, 235, 0.16);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+body.dark .feedback-form {
+    background: rgba(19, 42, 74, 0.76);
+    border-color: rgba(56, 189, 248, 0.16);
+}
+
+.feedback-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .feedback-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .feedback-form {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* Star Rating Styles */
+.rating-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-color);
+}
+
+body.dark .rating-group {
+    background: rgba(15, 34, 58, 0.5);
+}
+
+.rating-group > label {
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    color: var(--text-primary) !important;
+}
+
+.star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.star-rating label svg {
+    width: 32px;
+    height: 32px;
+    fill: transparent;
+    stroke: var(--text-muted);
+    stroke-width: 1.5;
+    transition: fill 0.25s ease, stroke 0.25s ease, filter 0.25s ease;
+}
+
+.star-rating label:hover {
+    transform: scale(1.25);
+}
+
+/* Hover & Checked state logic using flex-direction row-reverse */
+.star-rating label:hover svg,
+.star-rating label:hover ~ label svg,
+.star-rating input:checked ~ label svg {
+    fill: #f59e0b;
+    stroke: #f59e0b;
+    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4));
+}
+
+body.dark .star-rating label:hover svg,
+body.dark .star-rating label:hover ~ label svg,
+body.dark .star-rating input:checked ~ label svg {
+    fill: #f59e0b;
+    stroke: #f59e0b;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+.rating-badge {
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    background-color: var(--accent-light);
+    color: var(--accent-blue);
+    margin-top: 0.25rem;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(5px);
+}
+
+.rating-badge.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
 .contact-grid {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr;
@@ -2036,7 +2178,8 @@ body.dark .about-section,
 body.dark .projects-section,
 body.dark .gear-list-section,
 body.dark .setup-flow-section,
-body.dark .contact-section {
+body.dark .contact-section,
+body.dark .feedback-section {
     background-color: rgba(15, 34, 58, 0.9);
 }
 
@@ -2783,11 +2926,13 @@ body.dark .btn-primary {
 .gear-list-section,
 .setup-flow-section,
 .contact-section,
+.feedback-section,
 body.dark .about-section,
 body.dark .projects-section,
 body.dark .gear-list-section,
 body.dark .setup-flow-section,
-body.dark .contact-section {
+body.dark .contact-section,
+body.dark .feedback-section {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.035)),
         rgba(7, 16, 20, 0.72);
@@ -2797,7 +2942,8 @@ body:not(.dark) .about-section,
 body:not(.dark) .projects-section,
 body:not(.dark) .gear-list-section,
 body:not(.dark) .setup-flow-section,
-body:not(.dark) .contact-section {
+body:not(.dark) .contact-section,
+body:not(.dark) .feedback-section {
     background: rgba(239, 247, 251, 0.76);
 }
 
@@ -3150,7 +3296,8 @@ body.scrolling-up .header.scrolled {
 .gear-hero-section,
 .gear-list-section,
 .setup-flow-section,
-.contact-section {
+.contact-section,
+.feedback-section {
     position: relative;
     overflow: hidden;
 }
@@ -3161,7 +3308,8 @@ body.scrolling-up .header.scrolled {
 .gear-hero-section::before,
 .gear-list-section::before,
 .setup-flow-section::before,
-.contact-section::before {
+.contact-section::before,
+.feedback-section::before {
     content: '';
     position: absolute;
     left: 0;
@@ -3286,7 +3434,8 @@ body.scrolling-up .header.scrolled {
     .gear-hero-section::before,
     .gear-list-section::before,
     .setup-flow-section::before,
-    .contact-section::before {
+    .contact-section::before,
+    .feedback-section::before {
         transform: none;
         transition: none;
         filter: none;
@@ -3390,7 +3539,8 @@ body::after {
 .gear-hero-section,
 .gear-list-section,
 .setup-flow-section,
-.contact-section {
+.contact-section,
+.feedback-section {
     min-height: min(980px, 100vh);
 }
 
@@ -3414,7 +3564,8 @@ body::after {
 .reveal::after,
 .gear-hero-section::after,
 .setup-flow-section::after,
-.contact-section::after {
+.contact-section::after,
+.feedback-section::after {
     content: attr(data-scene);
     position: absolute;
     right: clamp(1rem, 6vw, 5rem);
@@ -3482,7 +3633,8 @@ body::after {
 .gear-hero-section.section-focus,
 .gear-list-section.section-focus,
 .setup-flow-section.section-focus,
-.contact-section.section-focus {
+.contact-section.section-focus,
+.feedback-section.section-focus {
     background:
         radial-gradient(circle at calc(var(--section-progress, 0.5) * 100%) 18%, rgba(121, 238, 255, 0.13), transparent 28rem),
         linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.04)),
@@ -4211,7 +4363,8 @@ body:not(.dark) .gear-hero-section,
 body:not(.dark) .gear-list-section,
 body:not(.dark) .setup-flow-section,
 body:not(.dark) .hobbies-section,
-body:not(.dark) .contact-section {
+body:not(.dark) .contact-section,
+body:not(.dark) .feedback-section {
     background:
         radial-gradient(circle at calc(var(--section-progress, 0.5) * 100%) 12%, rgba(8, 127, 153, 0.1), transparent 28rem),
         linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(235, 247, 251, 0.78));
