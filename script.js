@@ -2100,23 +2100,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (supabaseClient) {
                 try {
+                    const { data: usersList } = await supabaseClient.rpc('get_public_users');
+                    const allUsers = usersList || [];
+                    
                     // Check if username already exists
-                    const { data: userByUsername } = await supabaseClient
-                        .from('portfolio_users')
-                        .select('username')
-                        .eq('username', username)
-                        .maybeSingle();
+                    const userByUsername = allUsers.find(u => u.username && u.username.toLowerCase() === username.toLowerCase());
                     if (userByUsername) {
                         showToast('Tên đăng nhập đã được sử dụng! Vui lòng chọn tên khác.');
                         return;
                     }
                     
                     // Check if email already exists
-                    const { data: userByEmail } = await supabaseClient
-                        .from('portfolio_users')
-                        .select('email')
-                        .eq('email', email)
-                        .maybeSingle();
+                    const userByEmail = allUsers.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
                     if (userByEmail) {
                         showToast('Email đã được đăng ký! Vui lòng sử dụng email khác.');
                         return;
@@ -2405,21 +2400,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (supabaseClient) {
                 try {
-                    const updateData = {
-                        name: newName,
-                        classSchool: newClassSchool,
-                        avatar: tempAvatarBase64
-                    };
-                    if (newPassword) {
-                        updateData.password = newPassword;
-                    }
+                    const { data: success, error } = await supabaseClient.rpc('update_user_profile', {
+                        p_username: currentUser.username,
+                        p_name: newName,
+                        p_class_school: newClassSchool,
+                        p_avatar: tempAvatarBase64,
+                        p_password: newPassword || ''
+                    });
                     
-                    const { error } = await supabaseClient
-                        .from('portfolio_users')
-                        .update(updateData)
-                        .eq('username', currentUser.username);
-                        
-                    if (error) throw error;
+                    if (error || !success) throw (error || new Error('Không thể cập nhật hồ sơ cá nhân'));
                     
                     // Update session
                     const updatedUserSession = {
