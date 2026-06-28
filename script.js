@@ -1081,9 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let allUsers = [];
         if (supabaseClient) {
             try {
-                const { data } = await supabaseClient
-                    .from('portfolio_public_users')
-                    .select('name, email, avatar, classSchool, username');
+                const { data } = await supabaseClient.rpc('get_public_users');
                 allUsers = data || [];
             } catch (e) {
                 console.error('Error fetching users for rendering:', e);
@@ -1768,11 +1766,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (supabaseClient) {
             try {
-                const { data: adminUser, error } = await supabaseClient
-                    .from('portfolio_public_users')
-                    .select('username')
-                    .eq('username', 'admin')
-                    .maybeSingle();
+                const { data: usersList, error } = await supabaseClient.rpc('get_public_users');
+                const adminUser = usersList && usersList.find(u => u.username === 'admin');
                 
                 if (!adminUser && !error) {
                     await supabaseClient.from('portfolio_users').insert([defaultAdmin]);
@@ -1936,12 +1931,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             let adminUser = null;
             if (supabaseClient) {
-                const { data } = await supabaseClient
-                    .from('portfolio_public_users')
-                    .select('name, avatar')
-                    .eq('username', 'admin')
-                    .maybeSingle();
-                adminUser = data;
+                const { data: usersList } = await supabaseClient.rpc('get_public_users');
+                adminUser = usersList && usersList.find(u => u.username === 'admin');
             } else {
                 const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
                 adminUser = allUsers.find(u => u.username === 'admin');
