@@ -390,15 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: true });
 
-        window.addEventListener('pointerdown', (event) => {
-            ripples.push({
-                x: event.clientX,
-                y: event.clientY,
-                radius: 12,
-                alpha: 0.75
-            });
-        }, { passive: true });
-
         window.addEventListener('resize', () => {
             updatePointer(window.innerWidth / 2, window.innerHeight / 2);
             resizeCanvas();
