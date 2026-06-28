@@ -1040,13 +1040,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentUser = getCurrentUser();
         const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.username === 'admin');
         
-        // Look up admin avatar dynamically to show in replies
+        // Look up admin details dynamically to show in replies
         let adminAvatar = '';
+        let adminName = 'Bùi Trần Đức Thịnh'; // default name
         try {
             const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
             const adminUser = allUsers.find(u => u.username === 'admin');
-            if (adminUser && adminUser.avatar) {
-                adminAvatar = adminUser.avatar;
+            if (adminUser) {
+                if (adminUser.avatar) {
+                    adminAvatar = adminUser.avatar;
+                }
+                if (adminUser.name) {
+                    adminName = adminUser.name;
+                }
             }
         } catch (e) {
             console.log('Error looking up admin avatar for replies', e);
@@ -1079,7 +1085,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render Cards
         feedbackList.innerHTML = list.map(item => {
-            const avatarChar = item.name.charAt(0).toUpperCase();
+            let displayNameVal = item.name || '';
+            let displayClass = item.class || '';
+            let displaySchool = item.school || '';
+            let userAvatar = item.avatar || '';
+
+            // Try to find if this is a registered user to get their latest name, class, school, and avatar dynamically
+            if (item.verified && item.email) {
+                try {
+                    const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                    const matchedUser = allUsers.find(u => u.email.toLowerCase() === item.email.toLowerCase());
+                    if (matchedUser) {
+                        displayNameVal = matchedUser.name;
+                        userAvatar = matchedUser.avatar || '';
+                        
+                        // Parse class and school from matchedUser.classSchool
+                        if (matchedUser.classSchool) {
+                            if (matchedUser.classSchool.includes(' - ')) {
+                                const parts = matchedUser.classSchool.split(' - ');
+                                displayClass = parts[0].trim();
+                                displaySchool = parts[1].trim();
+                            } else {
+                                displayClass = matchedUser.classSchool;
+                                displaySchool = '';
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.log('Error looking up registered user details for feedback rendering', e);
+                }
+            }
+
+            const avatarChar = displayNameVal.charAt(0).toUpperCase();
             const starsStr = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
             
             // Mask phone number for privacy: e.g. 0967505247 -> 0967***247
@@ -1101,26 +1138,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            const classInfo = item.class ? ` • Lớp: ${escapeHTML(item.class)}` : '';
-            const schoolInfo = item.school ? ` • Trường: ${escapeHTML(item.school)}` : '';
+            const classInfo = displayClass ? ` • Lớp: ${escapeHTML(displayClass)}` : '';
+            const schoolInfo = displaySchool ? ` • Trường: ${escapeHTML(displaySchool)}` : '';
             const emailInfo = displayEmail ? ` • Email: ${escapeHTML(displayEmail)}` : '';
 
-            // Try to find if this is a registered user to get their current avatar dynamically
-            let userAvatar = item.avatar || '';
-            if (item.verified) {
-                try {
-                    const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-                    const matchedUser = allUsers.find(u => u.name === item.name || u.email === item.email);
-                    if (matchedUser && matchedUser.avatar) {
-                        userAvatar = matchedUser.avatar;
-                    }
-                } catch (e) {
-                    console.log('Error looking up user avatar', e);
-                }
-            }
-
             const avatarHtml = userAvatar
-                ? `<span class="feedback-card-avatar" style="background: none; border: 1px solid var(--border-color);"><img src="${userAvatar}" alt="${item.name}"></span>`
+                ? `<span class="feedback-card-avatar" style="background: none; border: 1px solid var(--border-color);"><img src="${userAvatar}" alt="${escapeHTML(displayNameVal)}"></span>`
                 : `<span class="feedback-card-avatar" style="background: ${getAvatarGradient(avatarChar)}">${avatarChar}</span>`;
 
             // Verified Badge
@@ -1145,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="reply-header">
                         ${replyAvatarHtml}
                         <div class="reply-meta">
-                            <span class="reply-name">Phản hồi từ Bùi Trần Đức Thịnh (Admin)</span>
+                            <span class="reply-name">Phản hồi từ ${escapeHTML(adminName)} (Admin)</span>
                             <span class="reply-date">${escapeHTML(item.replyDate || '')}</span>
                         </div>
                         ${isAdmin ? `
