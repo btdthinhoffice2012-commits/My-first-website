@@ -32,12 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
         heroBackgroundObserver.observe(heroSection);
     }
 
+    if (window.location.pathname === '/setup') {
+        window.history.replaceState(null, '', '/#setup');
+        window.requestAnimationFrame(() => {
+            document.getElementById('setup')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+
     if (interactiveBg && !reduceMotion) {
         const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
         const follower = { x: pointer.x, y: pointer.y };
         const particles = [];
         const comets = [];
         const ripples = [];
+        const trailParticles = [];
+        let lastSpawnX = null;
+        let lastSpawnY = null;
         const ctx = backgroundCanvas ? backgroundCanvas.getContext('2d') : null;
         let width = window.innerWidth;
         let height = window.innerHeight;
@@ -55,6 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const particleFloor = width < 640 || isCoarsePointer ? 28 : 64;
             const particleCount = Math.min(particleLimit, Math.max(particleFloor, Math.floor((width * height) / particleDensity)));
 
+            // A list of code symbols, heavily weighted towards {}
+            const codeSymbols = ['{', '}', '{', '}', '{', '}', '[', ']', ';', '<', '>', '()', '++', '+', '-'];
+
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
                     x: Math.random() * width,
@@ -63,7 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     vy: (Math.random() - 0.5) * 0.38,
                     radius: Math.random() * 2.2 + 0.6,
                     pulse: Math.random() * Math.PI * 2,
-                    hue: Math.random() > 0.45 ? 199 : 220
+                    hue: Math.random() > 0.45 ? 199 : 220,
+                    char: codeSymbols[Math.floor(Math.random() * codeSymbols.length)]
                 });
             }
 
@@ -228,6 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ctx.clearRect(0, 0, width, height);
             drawAurora();
+            const isHeroInView = document.body.classList.contains('hero-in-view');
+            const sectionBoost = isHeroInView ? 1 : 1.34;
+            const sectionShadowBoost = isHeroInView ? 1 : 1.18;
+
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
 
             for (let i = 0; i < particles.length; i++) {
                 const particle = particles[i];
@@ -245,15 +266,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (particle.y < -20) particle.y = height + 20;
                 if (particle.y > height + 20) particle.y = -20;
 
-                const radius = particle.radius + Math.sin(particle.pulse) * 0.35 + influence * 1.8;
-                ctx.beginPath();
-                ctx.arc(particle.x, particle.y, radius, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${particle.hue}, 92%, ${58 + influence * 18}%, ${0.22 + influence * 0.5})`;
-                ctx.shadowColor = `hsla(${particle.hue}, 92%, 62%, ${0.35 + influence * 0.3})`;
-                ctx.shadowBlur = 10 + influence * 22;
-                ctx.fill();
+                const size = Math.max(8, (particle.radius * 6.4) + influence * 9.5);
+                ctx.font = `bold ${size}px 'Plus Jakarta Sans', monospace`;
+                const alpha = Math.min(0.92, (0.28 + influence * 0.56) * sectionBoost);
+                const shadowAlpha = Math.min(0.88, (0.42 + influence * 0.34) * sectionShadowBoost);
+                ctx.fillStyle = `hsla(${particle.hue}, 94%, ${52 + influence * 22}%, ${alpha})`;
+                ctx.shadowColor = `hsla(${particle.hue}, 94%, 56%, ${shadowAlpha})`;
+                ctx.shadowBlur = (12 + influence * 24) * sectionShadowBoost;
+
+                ctx.fillText(particle.char, particle.x, particle.y);
                 ctx.shadowBlur = 0;
             }
+            ctx.restore();
 
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
@@ -281,6 +305,32 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.beginPath();
             ctx.arc(follower.x, follower.y, 180, 0, Math.PI * 2);
             ctx.fill();
+
+            // Update and draw pointer trail particles
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (let i = trailParticles.length - 1; i >= 0; i--) {
+                const p = trailParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+                p.pulse += 0.05;
+
+                if (p.alpha <= 0) {
+                    trailParticles.splice(i, 1);
+                    continue;
+                }
+
+                const currentSize = p.size + Math.sin(p.pulse) * 1.5;
+                ctx.font = `bold ${currentSize}px 'Plus Jakarta Sans', monospace`;
+                ctx.fillStyle = `hsla(${p.hue}, 94%, 58%, ${Math.min(1, p.alpha * 1.14)})`;
+                ctx.shadowColor = `hsla(${p.hue}, 94%, 54%, ${p.alpha * 0.52})`;
+                ctx.shadowBlur = 10;
+                ctx.fillText(p.char, p.x, p.y);
+            }
+            ctx.restore();
+
             drawComets();
             drawRipples();
         };
@@ -301,7 +351,34 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         window.addEventListener('pointermove', (event) => {
-            updatePointer(event.clientX, event.clientY);
+            const x = event.clientX;
+            const y = event.clientY;
+            updatePointer(x, y);
+
+            if (lastSpawnX === null || lastSpawnY === null) {
+                lastSpawnX = x;
+                lastSpawnY = y;
+                return;
+            }
+
+            const dist = Math.hypot(x - lastSpawnX, y - lastSpawnY);
+            if (dist > 12) {
+                const codeSymbols = ['{', '}', '{', '}', '[', ']', ';', '<', '>', '()', '++'];
+                trailParticles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 1.2,
+                    vy: (Math.random() - 0.5) * 1.2 - 0.3,
+                    char: codeSymbols[Math.floor(Math.random() * codeSymbols.length)],
+                    alpha: 0.85,
+                    decay: 0.015 + Math.random() * 0.015,
+                    size: Math.random() * 8 + 10,
+                    hue: Math.random() > 0.45 ? 199 : 220,
+                    pulse: Math.random() * Math.PI * 2
+                });
+                lastSpawnX = x;
+                lastSpawnY = y;
+            }
         }, { passive: true });
 
         window.addEventListener('pointerdown', (event) => {
@@ -405,14 +482,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.setProperty('--scroll-y', `${scrollPos}px`);
         document.body.classList.toggle('scrolling-down', scrollPos > lastScrollPos && scrollPos > 80);
         document.body.classList.toggle('scrolling-up', scrollPos < lastScrollPos && scrollPos > 80);
-        
+
         // Header height transition on scroll
         if (scrollPos > 50) {
             header.classList.add('scrolled');
         } else {
             header.classList.remove('scrolled');
         }
-        
+
         // Scroll progress bar indicator
         scrollProgress.style.width = `${progress}%`;
         
@@ -549,56 +626,282 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Interactive Hero Terminal ---
-    const terminalOutput = document.querySelector('.terminal-output');
-    const terminalCommand = document.getElementById('terminal-command');
-    const terminalResponse = document.getElementById('terminal-response');
+    // --- Interactive Hero Terminal & Retro Snake Game ---
+    const terminalScreen = document.getElementById('terminal-screen');
+    const terminalLog = document.getElementById('terminal-log');
+    const terminalInput = document.getElementById('terminal-input');
     const terminalButtons = document.querySelectorAll('.terminal-command-btn');
-    const terminalResponses = {
-        whoami: 'tech portfolio operator | Linux fan | C++ learner',
-        skills: 'C++ fundamentals, Linux workflow, terminal UI, Git/GitHub, debugging',
-        projects: '3 active builds: Linux lab, C++ practice engine, tech command portfolio',
-        contact: 'email: btd.thinhoffice2012@gmail.com | zalo: 0967505247'
-    };
-    let terminalTypingTimer;
 
-    const runTerminalCommand = (command) => {
-        if (!terminalCommand || !terminalResponse || !terminalOutput) return;
+    let isTerminalTyping = false;
+    let isGameActive = false;
+    let snake = [];
+    let direction = { x: 1, y: 0 };
+    let food = { x: 0, y: 0 };
+    let score = 0;
+    let gameInterval = null;
+    const gridWidth = 16;
+    const gridHeight = 8;
 
-        clearInterval(terminalTypingTimer);
-        terminalCommand.textContent = command;
-        terminalResponse.textContent = '';
-        terminalOutput.classList.add('typing');
-
-        const response = terminalResponses[command] || terminalResponses.whoami;
-        let index = 0;
-
-        terminalTypingTimer = setInterval(() => {
-            terminalResponse.textContent += response.charAt(index);
-            index++;
-
-            if (index >= response.length) {
-                clearInterval(terminalTypingTimer);
-                terminalOutput.classList.remove('typing');
+    const spawnFood = () => {
+        let attempts = 0;
+        while (attempts < 100) {
+            const fx = Math.floor(Math.random() * gridWidth);
+            const fy = Math.floor(Math.random() * gridHeight);
+            let onSnake = false;
+            for (let seg of snake) {
+                if (seg.x === fx && seg.y === fy) {
+                    onSnake = true;
+                    break;
+                }
             }
-        }, 18);
+            if (!onSnake) {
+                food = { x: fx, y: fy };
+                return;
+            }
+            attempts++;
+        }
+        food = { x: 0, y: 0 };
+    };
+
+    const renderBoard = (boardEl) => {
+        let boardStr = `SCORE: ${score} | Nhấn 'ESC' để thoát\n`;
+        boardStr += '┌' + '─'.repeat(gridWidth) + '┐\n';
+        for (let y = 0; y < gridHeight; y++) {
+            boardStr += '│';
+            for (let x = 0; x < gridWidth; x++) {
+                let char = ' ';
+                if (x === food.x && y === food.y) {
+                    char = '★';
+                } else {
+                    let isHead = (x === snake[0].x && y === snake[0].y);
+                    let isBody = false;
+                    for (let i = 1; i < snake.length; i++) {
+                        if (x === snake[i].x && y === snake[i].y) {
+                            isBody = true;
+                            break;
+                        }
+                    }
+                    if (isHead) char = '●';
+                    else if (isBody) char = '○';
+                }
+                boardStr += char;
+            }
+            boardStr += '│\n';
+        }
+        boardStr += '└' + '─'.repeat(gridWidth) + '┘\n';
+        boardEl.textContent = boardStr;
+        if (terminalScreen) {
+            terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+    };
+
+    const startSnakeGame = () => {
+        if (isGameActive) return;
+        isGameActive = true;
+
+        const gameBoard = document.createElement('pre');
+        gameBoard.className = 'terminal-res';
+        gameBoard.style.color = '#34d399';
+        gameBoard.style.fontFamily = 'monospace';
+        gameBoard.style.lineHeight = '1.25';
+        terminalLog.appendChild(gameBoard);
+
+        snake = [
+            { x: 4, y: 3 },
+            { x: 3, y: 3 },
+            { x: 2, y: 3 }
+        ];
+        direction = { x: 1, y: 0 };
+        spawnFood();
+        score = 0;
+
+        if (terminalInput) {
+            terminalInput.disabled = true;
+        }
+
+        renderBoard(gameBoard);
+
+        gameInterval = setInterval(() => {
+            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+            if (head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight) {
+                endSnakeGame(gameBoard);
+                return;
+            }
+
+            for (let seg of snake) {
+                if (head.x === seg.x && head.y === seg.y) {
+                    endSnakeGame(gameBoard);
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            renderBoard(gameBoard);
+        }, 160);
+    };
+
+    const endSnakeGame = (boardEl) => {
+        clearInterval(gameInterval);
+        isGameActive = false;
+
+        const overMsg = document.createElement('p');
+        overMsg.className = 'terminal-res';
+        overMsg.innerHTML = `<span style="color: #fb7185; font-weight: 800;">[GAME OVER] Điểm số: ${score}</span><br>Gõ 'snake' để chơi lại hoặc gõ các lệnh khác.`;
+        terminalLog.appendChild(overMsg);
+
+        if (terminalInput) {
+            terminalInput.disabled = false;
+            terminalInput.focus();
+        }
+        if (terminalScreen) {
+            terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+    };
+
+    const executeCommand = (cmdStr) => {
+        if (isTerminalTyping) return;
+        const cmd = cmdStr.trim();
+        if (!cmd) return;
+
+        // Append command input line
+        const cmdLine = document.createElement('p');
+        cmdLine.innerHTML = `<span class="terminal-prompt">$</span> ${cmd}`;
+        terminalLog.appendChild(cmdLine);
+
+        const lowerCmd = cmd.toLowerCase();
+
+        if (lowerCmd === 'clear') {
+            terminalLog.innerHTML = '';
+            terminalInput.value = '';
+            if (terminalScreen) terminalScreen.scrollTop = 0;
+            return;
+        }
+
+        if (lowerCmd === 'snake' || lowerCmd === 'game') {
+            startSnakeGame();
+            return;
+        }
+
+        let response = '';
+        let isInstant = false;
+
+        if (lowerCmd === 'help') {
+            response = 'Available commands: whoami, skills, projects, contact, neofetch, snake (chơi game), clear, hello';
+        } else if (lowerCmd === 'hello') {
+            response = 'Hi there! Thanks for visiting my tech station. Have a great day!';
+        } else if (lowerCmd === 'whoami') {
+            response = 'tech portfolio operator | Linux fan | C++ learner';
+        } else if (lowerCmd === 'skills') {
+            response = 'C++ (Data Structures, Algorithms), Linux (Arch/CachyOS, Bash, System Tuning), Tools (Git, GitHub, Debugging)';
+        } else if (lowerCmd === 'projects') {
+            response = '3 active builds:\n- Linux Performance Lab\n- C++ Practice Engine\n- Tech Command Portfolio\nType or click them for info!';
+        } else if (lowerCmd === 'contact') {
+            response = 'email: btd.thinhoffice2012@gmail.com\nzalo: 0967505247\nphone: 0967505247';
+        } else if (lowerCmd === 'neofetch') {
+            response = `      /\\        thinh@THINH-PC
+     /  \\       --------------
+    /\\   \\      OS: Arch Linux / CachyOS x86_64
+   /      \\     Host: MSI GF63 9RCX
+  /   ,,   \\    Kernel: Linux zen-cachyos
+ /   |  |   \\   Uptime: 2 hours, 42 mins
+/   -'''-    \\  Shell: bash 5.2.26
+------------    Terminal: Alacritty + TMUX
+                CPU: Intel i5-9300H (8) @ 4.1GHz
+                GPU: NVIDIA GTX 1050 Ti Mobile
+                Memory: 8GB / 16GB
+                Palette: \u2588\u2588 \u2588\u2588 \u2588\u2588 \u2588\u2588 \u2588\u2588 \u2588\u2588 \u2588\u2588`;
+            isInstant = true;
+        } else {
+            response = `bash: command not found: ${cmd}. Type 'help' for available commands.`;
+        }
+
+        const resLine = document.createElement('p');
+        resLine.className = 'terminal-res';
+        terminalLog.appendChild(resLine);
+
+        if (terminalInput) {
+            terminalInput.value = '';
+            terminalInput.disabled = true;
+        }
+        isTerminalTyping = true;
+
+        if (terminalScreen) {
+            terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+
+        if (isInstant) {
+            resLine.textContent = response;
+            if (terminalInput) {
+                terminalInput.disabled = false;
+                terminalInput.focus();
+            }
+            isTerminalTyping = false;
+            if (terminalScreen) {
+                terminalScreen.scrollTop = terminalScreen.scrollHeight;
+            }
+        } else {
+            resLine.classList.add('typing');
+            let charIndex = 0;
+            const timer = setInterval(() => {
+                resLine.textContent += response.charAt(charIndex);
+                charIndex++;
+                if (terminalScreen) {
+                    terminalScreen.scrollTop = terminalScreen.scrollHeight;
+                }
+                if (charIndex >= response.length) {
+                    clearInterval(timer);
+                    resLine.classList.remove('typing');
+                    if (terminalInput) {
+                        terminalInput.disabled = false;
+                        terminalInput.focus();
+                    }
+                    isTerminalTyping = false;
+                    if (terminalScreen) {
+                        terminalScreen.scrollTop = terminalScreen.scrollHeight;
+                    }
+                }
+            }, 10);
+        }
 
         terminalButtons.forEach(button => {
-            button.classList.toggle('active', button.dataset.command === command);
+            button.classList.toggle('active', button.dataset.command === lowerCmd);
         });
     };
 
+    if (terminalInput) {
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand(terminalInput.value);
+            }
+        });
+    }
+
+    if (terminalScreen && terminalInput) {
+        terminalScreen.addEventListener('click', () => {
+            terminalInput.focus();
+        });
+    }
+
     terminalButtons.forEach(button => {
         button.addEventListener('click', () => {
-            runTerminalCommand(button.dataset.command);
+            executeCommand(button.dataset.command);
         });
     });
 
     window.addEventListener('keydown', (event) => {
         const isTypingField = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
-        if (event.key.toLowerCase() === 't' && !isTypingField && terminalButtons.length) {
-            terminalButtons[0].focus();
-            runTerminalCommand('whoami');
+        if (event.key.toLowerCase() === 't' && !isTypingField && terminalInput) {
+            event.preventDefault();
+            terminalInput.focus();
         }
     });
 
@@ -661,7 +964,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.textContent = 'Gửi thành công!';
                 submitBtn.style.backgroundColor = '#10b981'; // green color
                 submitBtn.style.color = '#ffffff';
-                
+
                 // Clear fields
                 contactForm.reset();
                 
@@ -776,4 +1079,109 @@ document.addEventListener('DOMContentLoaded', () => {
             setupVideo.currentTime = pos * setupVideo.duration;
         });
     }
+
+    // --- YouTube Music Station Controllers ---
+    const getYoutubeVideoId = (url) => {
+        try {
+            const parsedUrl = new URL(url);
+
+            if (parsedUrl.hostname.includes('youtu.be')) {
+                return parsedUrl.pathname.replace('/', '');
+            }
+
+            return parsedUrl.searchParams.get('v') || '';
+        } catch (error) {
+            return '';
+        }
+    };
+
+    document.querySelectorAll('.mtp-station').forEach(station => {
+        const currentTitle = station.querySelector('.player-title');
+        const openYoutube = station.querySelector('.open-current-link');
+        const playCurrent = station.querySelector('.mtp-play-overlay');
+        const cover = station.querySelector('.mtp-frame img');
+        const tracks = station.querySelectorAll('.mtp-track');
+
+        if (!currentTitle || !tracks.length) return;
+
+        const loadMtpTrack = (track, autoplay = true) => {
+            const youtubeUrl = track.dataset.youtubeUrl;
+            const videoId = getYoutubeVideoId(youtubeUrl);
+
+            if (!videoId) return;
+
+            currentTitle.textContent = track.dataset.title || track.textContent.trim();
+
+            if (openYoutube) {
+                openYoutube.href = youtubeUrl;
+            }
+
+            if (playCurrent) {
+                playCurrent.href = youtubeUrl;
+            }
+
+            if (cover) {
+                cover.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                cover.alt = `Thumbnail bài ${currentTitle.textContent}`;
+            }
+
+            tracks.forEach(item => {
+                item.classList.toggle('active', item === track);
+            });
+        };
+
+        tracks.forEach(track => {
+            track.addEventListener('click', () => loadMtpTrack(track));
+        });
+
+        loadMtpTrack(station.querySelector('.mtp-track.active') || tracks[0], false);
+    });
+
+
+
+    // Intercept keys for Snake Game steering & Escape to quit
+    window.addEventListener('keydown', (event) => {
+        if (isGameActive) {
+            const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'];
+            if (keys.includes(event.key)) {
+                event.preventDefault();
+
+                let newDir = { ...direction };
+                switch (event.key.toLowerCase()) {
+                    case 'arrowup':
+                    case 'w':
+                        if (direction.y !== 1) newDir = { x: 0, y: -1 };
+                        break;
+                    case 'arrowdown':
+                    case 's':
+                        if (direction.y !== -1) newDir = { x: 0, y: 1 };
+                        break;
+                    case 'arrowleft':
+                    case 'a':
+                        if (direction.x !== 1) newDir = { x: -1, y: 0 };
+                        break;
+                    case 'arrowright':
+                    case 'd':
+                        if (direction.x !== -1) newDir = { x: 1, y: 0 };
+                        break;
+                }
+                direction = newDir;
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                clearInterval(gameInterval);
+                isGameActive = false;
+                const escMsg = document.createElement('p');
+                escMsg.className = 'terminal-res';
+                escMsg.innerHTML = `<span style="color: #fbbf24; font-weight: 800;">[Đã thoát game] Điểm số đạt được: ${score}</span>`;
+                terminalLog.appendChild(escMsg);
+                if (terminalInput) {
+                    terminalInput.disabled = false;
+                    terminalInput.focus();
+                }
+                if (terminalScreen) {
+                    terminalScreen.scrollTop = terminalScreen.scrollHeight;
+                }
+            }
+        }
+    });
 });

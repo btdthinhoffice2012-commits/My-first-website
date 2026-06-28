@@ -39,6 +39,7 @@
                     <li><a href="#skills" class="nav-link">Kỹ Năng</a></li>
                     <li><a href="#projects" class="nav-link">Dự Án</a></li>
                     <li><a href="#setup" class="nav-link">Setup</a></li>
+                    <li><a href="#hobbies" class="nav-link">Sở Thích</a></li>
                     <li><a href="#contact" class="nav-link">Liên Hệ</a></li>
                 </ul>
             </nav>
@@ -100,9 +101,15 @@
                             </div>
                             <span class="terminal-title">thinh@portfolio:~</span>
                         </div>
-                        <div class="terminal-output">
-                            <p><span class="terminal-prompt">$</span> <span id="terminal-command">whoami</span></p>
-                            <p id="terminal-response">tech portfolio operator | Linux fan | C++ learner</p>
+                        <div class="terminal-output" id="terminal-screen">
+                            <div class="terminal-log" id="terminal-log">
+                                <p><span class="terminal-prompt">$</span> whoami</p>
+                                <p class="terminal-res">tech portfolio operator | Linux fan | C++ learner</p>
+                            </div>
+                            <div class="terminal-input-line">
+                                <span class="terminal-prompt">$</span>
+                                <input type="text" id="terminal-input" placeholder="Gõ 'help'..." autocomplete="off" spellcheck="false">
+                            </div>
                         </div>
                         <div class="terminal-actions" aria-label="Chạy lệnh nhanh">
                             <button type="button" class="terminal-command-btn active" data-command="whoami">whoami</button>
@@ -501,6 +508,140 @@
             </div>
         </section>
 
+        <!-- Hobbies Section -->
+        <section id="hobbies" class="hobbies-section reveal">
+            <div class="container hobbies-grid">
+                <div class="hobbies-copy">
+                    <span class="section-subtitle">Sở Thích</span>
+                    <h2 class="section-title">Góc nghe nhạc khi code và thư giãn.</h2>
+                    <p>Mình thích nghe Sơn Tùng M-TP, Low G và MCK khi học, setup máy hoặc làm web. Mục này gom các link YouTube đã kiểm tra để mở nhanh mà không bị lỗi embed khi share website.</p>
+                </div>
+                <div class="music-stations">
+                    <div class="mtp-station reveal-child" aria-label="Sơn Tùng M-TP music station">
+                        <div class="player-top">
+                            <span class="player-status">M-TP Music Station</span>
+                            <div class="audio-bars" aria-hidden="true">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3 class="player-title">Chúng Ta Của Tương Lai</h3>
+                        <div class="mtp-frame mtp-launcher">
+                            <img src="https://img.youtube.com/vi/zoEtcR5EW08/hqdefault.jpg" alt="Thumbnail bài Chúng Ta Của Tương Lai" loading="lazy">
+                            <a class="mtp-play-overlay" href="https://www.youtube.com/watch?v=zoEtcR5EW08" target="_blank" rel="noopener noreferrer" aria-label="Phát bài hiện tại trên YouTube">
+                                <span></span>
+                            </a>
+                        </div>
+                        <a class="mtp-youtube-link play-all-link" href="https://www.youtube.com/watch_videos?video_ids=zoEtcR5EW08,SlQR9iu09bQ,abPmZCZZrFA,xypzmu5mMPY,6t-MjBazs3o,knW7-x7Y7RE,32sYGCOYJUM,FN7ALfpGxiI,Llw9Q6akRo4,qGRU3sRbaYw" target="_blank" rel="noopener noreferrer">
+                            Phát playlist trên YouTube
+                        </a>
+                        <a class="mtp-youtube-link open-current-link" href="https://www.youtube.com/watch?v=zoEtcR5EW08" target="_blank" rel="noopener noreferrer">
+                            Mở bài đang chọn
+                        </a>
+                        <a class="mtp-source-link" href="https://www.youtube.com/@sontungmtp" target="_blank" rel="noopener noreferrer">
+                            Nguồn: YouTube Sơn Tùng M-TP
+                        </a>
+                        <div class="mtp-track-list" aria-label="Danh sách bài hát Sơn Tùng M-TP">
+                            <button type="button" class="mtp-track active" data-title="Chúng Ta Của Tương Lai" data-youtube-url="https://www.youtube.com/watch?v=zoEtcR5EW08">Chúng Ta Của Tương Lai</button>
+                            <button type="button" class="mtp-track" data-title="Come My Way" data-youtube-url="https://www.youtube.com/watch?v=SlQR9iu09bQ">Come My Way</button>
+                            <button type="button" class="mtp-track" data-title="Đừng Làm Trái Tim Anh Đau" data-youtube-url="https://www.youtube.com/watch?v=abPmZCZZrFA">Đừng Làm Trái Tim Anh Đau</button>
+                            <button type="button" class="mtp-track" data-title="Muộn Rồi Mà Sao Còn" data-youtube-url="https://www.youtube.com/watch?v=xypzmu5mMPY">Muộn Rồi Mà Sao Còn</button>
+                            <button type="button" class="mtp-track" data-title="Có Chắc Yêu Là Đây" data-youtube-url="https://www.youtube.com/watch?v=6t-MjBazs3o">Có Chắc Yêu Là Đây</button>
+                            <button type="button" class="mtp-track" data-title="Hãy Trao Cho Anh" data-youtube-url="https://www.youtube.com/watch?v=knW7-x7Y7RE">Hãy Trao Cho Anh</button>
+                            <button type="button" class="mtp-track" data-title="Chạy Ngay Đi" data-youtube-url="https://www.youtube.com/watch?v=32sYGCOYJUM">Chạy Ngay Đi</button>
+                            <button type="button" class="mtp-track" data-title="Nơi Này Có Anh" data-youtube-url="https://www.youtube.com/watch?v=FN7ALfpGxiI">Nơi Này Có Anh</button>
+                            <button type="button" class="mtp-track" data-title="Lạc Trôi" data-youtube-url="https://www.youtube.com/watch?v=Llw9Q6akRo4">Lạc Trôi</button>
+                            <button type="button" class="mtp-track" data-title="Chúng Ta Không Thuộc Về Nhau" data-youtube-url="https://www.youtube.com/watch?v=qGRU3sRbaYw">Chúng Ta Không Thuộc Về Nhau</button>
+                        </div>
+                    </div>
+
+                    <div class="mtp-station reveal-child" aria-label="Low G music station">
+                        <div class="player-top">
+                            <span class="player-status">Low G Rap Station</span>
+                            <div class="audio-bars" aria-hidden="true">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3 class="player-title">Love Game</h3>
+                        <div class="mtp-frame mtp-launcher">
+                            <img src="https://img.youtube.com/vi/cI5b71ZBAn0/hqdefault.jpg" alt="Thumbnail bài Love Game" loading="lazy">
+                            <a class="mtp-play-overlay" href="https://www.youtube.com/watch?v=cI5b71ZBAn0" target="_blank" rel="noopener noreferrer" aria-label="Phát bài hiện tại trên YouTube">
+                                <span></span>
+                            </a>
+                        </div>
+                        <a class="mtp-youtube-link play-all-link" href="https://www.youtube.com/watch_videos?video_ids=cI5b71ZBAn0,3mvIhUZt8hE,T7ksmtaVeOk,IGHBSyXKZ8Y,gHSMZzc-iEE,TaZTsgc_bg8,3nL87hawUsI,yZW8jzWb5yA,_qPdi9D2rHA,J7eYhM6wXPo,SutaE3lW_8E,6acS2vOxmRI,XjbQG3k69wA,DcCISK3sCYg,u933bUFjV80,6aBnhxRvmok" target="_blank" rel="noopener noreferrer">
+                            Phát playlist Low G
+                        </a>
+                        <a class="mtp-youtube-link open-current-link" href="https://www.youtube.com/watch?v=cI5b71ZBAn0" target="_blank" rel="noopener noreferrer">
+                            Mở bài đang chọn
+                        </a>
+                        <a class="mtp-source-link" href="https://www.youtube.com/@low.g" target="_blank" rel="noopener noreferrer">
+                            Nguồn: YouTube Low G
+                        </a>
+                        <div class="mtp-track-list" aria-label="Danh sách bài hát Low G">
+                            <button type="button" class="mtp-track active" data-title="Love Game" data-youtube-url="https://www.youtube.com/watch?v=cI5b71ZBAn0">Love Game</button>
+                            <button type="button" class="mtp-track" data-title="Nét" data-youtube-url="https://www.youtube.com/watch?v=3mvIhUZt8hE">Nét</button>
+                            <button type="button" class="mtp-track" data-title="In Love" data-youtube-url="https://www.youtube.com/watch?v=T7ksmtaVeOk">In Love</button>
+                            <button type="button" class="mtp-track" data-title="Đừng Để Tiền Rơi" data-youtube-url="https://www.youtube.com/watch?v=IGHBSyXKZ8Y">Đừng Để Tiền Rơi</button>
+                            <button type="button" class="mtp-track" data-title="Siêu Sao" data-youtube-url="https://www.youtube.com/watch?v=gHSMZzc-iEE">Siêu Sao</button>
+                            <button type="button" class="mtp-track" data-title="okeokeoke" data-youtube-url="https://www.youtube.com/watch?v=TaZTsgc_bg8">okeokeoke</button>
+                            <button type="button" class="mtp-track" data-title="Simple Cypher" data-youtube-url="https://www.youtube.com/watch?v=3nL87hawUsI">Simple Cypher</button>
+                            <button type="button" class="mtp-track" data-title="Càng Cua" data-youtube-url="https://www.youtube.com/watch?v=yZW8jzWb5yA">Càng Cua</button>
+                            <button type="button" class="mtp-track" data-title="Chán Gái 707" data-youtube-url="https://www.youtube.com/watch?v=_qPdi9D2rHA">Chán Gái 707</button>
+                            <button type="button" class="mtp-track" data-title="An Thần" data-youtube-url="https://www.youtube.com/watch?v=J7eYhM6wXPo">An Thần</button>
+                            <button type="button" class="mtp-track" data-title="Hop On Da Show" data-youtube-url="https://www.youtube.com/watch?v=SutaE3lW_8E">Hop On Da Show</button>
+                            <button type="button" class="mtp-track" data-title="pho real" data-youtube-url="https://www.youtube.com/watch?v=6acS2vOxmRI">pho real</button>
+                            <button type="button" class="mtp-track" data-title="Podcast" data-youtube-url="https://www.youtube.com/watch?v=XjbQG3k69wA">Podcast</button>
+                            <button type="button" class="mtp-track" data-title="Có Em" data-youtube-url="https://www.youtube.com/watch?v=DcCISK3sCYg">Có Em</button>
+                            <button type="button" class="mtp-track" data-title="Cắt Kéo Trên Lênin" data-youtube-url="https://www.youtube.com/watch?v=u933bUFjV80">Cắt Kéo Trên Lênin</button>
+                            <button type="button" class="mtp-track" data-title="Simp Gái 808" data-youtube-url="https://www.youtube.com/watch?v=6aBnhxRvmok">Simp Gái 808</button>
+                        </div>
+                    </div>
+
+                    <div class="mtp-station reveal-child" aria-label="MCK music station">
+                        <div class="player-top">
+                            <span class="player-status">MCK Rap Station</span>
+                            <div class="audio-bars" aria-hidden="true">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3 class="player-title">2h</h3>
+                        <div class="mtp-frame mtp-launcher">
+                            <img src="https://img.youtube.com/vi/mbEZ_9dhM_Y/hqdefault.jpg" alt="Thumbnail bài 2h" loading="lazy">
+                            <a class="mtp-play-overlay" href="https://www.youtube.com/watch?v=mbEZ_9dhM_Y" target="_blank" rel="noopener noreferrer" aria-label="Phát bài hiện tại trên YouTube">
+                                <span></span>
+                            </a>
+                        </div>
+                        <a class="mtp-youtube-link play-all-link" href="https://www.youtube.com/watch_videos?video_ids=mbEZ_9dhM_Y,X_mlfWmepCA,ppnx7BHXZ6E,S7EExKAwL2Y,U0Vr1zotKIo,n7nt4ixOwmo,9f1u_U3Hvf4,Yw9Ra2UiVLw,rYWLIJB214Q,L4dSipbZj8A,Ek2n3C20I_I,tCJAslFMLFI,1jTSZWRFEB8,6fzH7a3XQW0,ODK1EKmJGbQ" target="_blank" rel="noopener noreferrer">
+                            Phát playlist MCK
+                        </a>
+                        <a class="mtp-youtube-link open-current-link" href="https://www.youtube.com/watch?v=mbEZ_9dhM_Y" target="_blank" rel="noopener noreferrer">
+                            Mở bài đang chọn
+                        </a>
+                        <a class="mtp-source-link" href="https://www.youtube.com/@hoanglongmck" target="_blank" rel="noopener noreferrer">
+                            Nguồn: YouTube MCK
+                        </a>
+                        <div class="mtp-track-list" aria-label="Danh sách bài hát MCK">
+                            <button type="button" class="mtp-track active" data-title="2h" data-youtube-url="https://www.youtube.com/watch?v=mbEZ_9dhM_Y">2h</button>
+                            <button type="button" class="mtp-track" data-title="Elegie" data-youtube-url="https://www.youtube.com/watch?v=X_mlfWmepCA">Elegie</button>
+                            <button type="button" class="mtp-track" data-title="IDK" data-youtube-url="https://www.youtube.com/watch?v=ppnx7BHXZ6E">IDK</button>
+                            <button type="button" class="mtp-track" data-title="Liệm" data-youtube-url="https://www.youtube.com/watch?v=S7EExKAwL2Y">Liệm</button>
+                            <button type="button" class="mtp-track" data-title="Tại Vì Sao" data-youtube-url="https://www.youtube.com/watch?v=U0Vr1zotKIo">Tại Vì Sao</button>
+                            <button type="button" class="mtp-track" data-title="Baby" data-youtube-url="https://www.youtube.com/watch?v=n7nt4ixOwmo">Baby</button>
+                            <button type="button" class="mtp-track" data-title="Ai Mới Là Kẻ Xấu Xa" data-youtube-url="https://www.youtube.com/watch?v=9f1u_U3Hvf4">Ai Mới Là Kẻ Xấu Xa</button>
+                            <button type="button" class="mtp-track" data-title="Chìm Sâu" data-youtube-url="https://www.youtube.com/watch?v=Yw9Ra2UiVLw">Chìm Sâu</button>
+                            <button type="button" class="mtp-track" data-title="Nếu Như Ta Chẳng Còn" data-youtube-url="https://www.youtube.com/watch?v=rYWLIJB214Q">Nếu Như Ta Chẳng Còn</button>
+                            <button type="button" class="mtp-track" data-title="Mắt Môi Tay Chân" data-youtube-url="https://www.youtube.com/watch?v=L4dSipbZj8A">Mắt Môi Tay Chân</button>
+                            <button type="button" class="mtp-track" data-title="Là Gì Của Nhau" data-youtube-url="https://www.youtube.com/watch?v=Ek2n3C20I_I">Là Gì Của Nhau</button>
+                            <button type="button" class="mtp-track" data-title="Cảm Ơn" data-youtube-url="https://www.youtube.com/watch?v=tCJAslFMLFI">Cảm Ơn</button>
+                            <button type="button" class="mtp-track" data-title="Suit & Tie" data-youtube-url="https://www.youtube.com/watch?v=1jTSZWRFEB8">Suit & Tie</button>
+                            <button type="button" class="mtp-track" data-title="Thôi Em Đừng Đi" data-youtube-url="https://www.youtube.com/watch?v=6fzH7a3XQW0">Thôi Em Đừng Đi</button>
+                            <button type="button" class="mtp-track" data-title="Cuốn Cho Anh 1 Điếu Nữa Đi" data-youtube-url="https://www.youtube.com/watch?v=ODK1EKmJGbQ">Cuốn Cho Anh 1 Điếu Nữa Đi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Contact Section -->
         <section id="contact" class="contact-section reveal">
             <div class="container">
@@ -615,6 +756,7 @@
                 <a href="#skills">Kỹ năng</a>
                 <a href="#projects">Dự án</a>
                 <a href="#setup">Setup</a>
+                <a href="#hobbies">Sở thích</a>
                 <a href="#contact">Liên hệ</a>
             </div>
             <div class="footer-qr">

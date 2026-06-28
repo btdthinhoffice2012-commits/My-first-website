@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/setup",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/((?!assets/|.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
