@@ -2291,9 +2291,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Validate size (1MB max)
-            if (file.size > 1024 * 1024) {
-                showToast('Dung lượng ảnh vượt quá 1MB! Vui lòng chọn ảnh nhẹ hơn.');
+            // Validate size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Dung lượng ảnh vượt quá 10MB! Vui lòng chọn ảnh nhẹ hơn.');
                 profileAvatarInput.value = '';
                 return;
             }
