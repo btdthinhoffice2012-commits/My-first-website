@@ -2125,6 +2125,7 @@ body.dark .feedback-card:hover {
 .feedback-card-avatar {
     width: 40px;
     height: 40px;
+    flex-shrink: 0;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-blue), #0d9488);
     color: #ffffff;
@@ -4729,6 +4730,7 @@ body.dark .auth-btn:hover {
 .user-avatar {
     width: 32px;
     height: 32px;
+    flex-shrink: 0;
     border-radius: 50%;
     background: linear-gradient(135deg, #2563eb, #0d9488);
     color: #ffffff;
@@ -5296,6 +5298,7 @@ body:not(.dark) .feedback-admin-reply {
 .reply-avatar {
     width: 24px;
     height: 24px;
+    flex-shrink: 0;
     border-radius: 50%;
     color: #ffffff;
     display: flex;

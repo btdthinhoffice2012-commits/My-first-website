@@ -1136,10 +1136,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let displayClass = item.class || '';
             let displaySchool = item.school || '';
             let userAvatar = item.avatar || '';
+            let matchedUser = null;
 
             // Try to find if this is a registered user to get their latest name, class, school, and avatar dynamically
-            if (item.verified && item.email) {
-                const matchedUser = allUsers.find(u => u.email && u.email.toLowerCase() === item.email.toLowerCase());
+            if (item.email) {
+                matchedUser = allUsers.find(u => u.email && u.email.toLowerCase() === item.email.toLowerCase());
                 if (matchedUser) {
                     displayNameVal = matchedUser.name;
                     userAvatar = matchedUser.avatar || '';
@@ -1189,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 : `<span class="feedback-card-avatar" style="background: ${getAvatarGradient(avatarChar)}">${avatarChar}</span>`;
 
             // Verified Badge
-            const verifiedBadgeHtml = item.verified 
+            const verifiedBadgeHtml = (item.verified || matchedUser)
                 ? `<span class="verified-badge" title="Đã xác thực tài khoản"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã xác minh</span>` 
                 : '';
             
