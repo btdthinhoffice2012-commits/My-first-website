@@ -1,5 +1,14 @@
 // Modern Portfolio Web Interactivity Script
 
+// Supabase Configuration - Replace with your actual Project URL and Anon Key to enable real sync
+const SUPABASE_URL = 'https://aorecrgczywsbusorftb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFvcmVjcmdjenl3c2J1c29yZnRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2MzIzMjcsImV4cCI6MjA5ODIwODMyN30.GyF60BIBeAMha2PToL8OxxMj9OHJSNpRa7nU31JvlCE';
+let supabaseClient = null;
+
+if (typeof window.supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Interactive Mouse-follow Background ---
     const interactiveBg = document.querySelector('.interactive-bg');
@@ -1026,36 +1035,74 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function saveFeedback(newFeedback) {
-        const list = getFeedbacks();
-        list.unshift(newFeedback);
-        localStorage.setItem('portfolio_feedbacks', JSON.stringify(list));
-        renderFeedbacks();
+    async function saveFeedback(newFeedback) {
+        if (supabaseClient) {
+            try {
+                const { error } = await supabaseClient
+                    .from('portfolio_feedbacks')
+                    .insert([newFeedback]);
+                if (error) throw error;
+            } catch (e) {
+                console.error('Error saving feedback to Supabase:', e);
+                showToast('Lỗi khi gửi đánh giá lên hệ thống!');
+            }
+        } else {
+            const list = getFeedbacks();
+            list.unshift(newFeedback);
+            localStorage.setItem('portfolio_feedbacks', JSON.stringify(list));
+        }
+        await renderFeedbacks();
     }
 
-    function renderFeedbacks() {
+    async function renderFeedbacks() {
         if (!feedbackList) return;
-        const list = getFeedbacks();
+        
+        let list = [];
+        if (supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('portfolio_feedbacks')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (!error) {
+                    list = data || [];
+                }
+            } catch (e) {
+                console.error('Error loading feedbacks from Supabase:', e);
+            }
+        } else {
+            list = getFeedbacks();
+        }
         
         const currentUser = getCurrentUser();
         const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.username === 'admin');
         
+        // Fetch all users once for sync
+        let allUsers = [];
+        if (supabaseClient) {
+            try {
+                const { data } = await supabaseClient
+                    .from('portfolio_public_users')
+                    .select('name, email, avatar, classSchool, username');
+                allUsers = data || [];
+            } catch (e) {
+                console.error('Error fetching users for rendering:', e);
+            }
+        } else {
+            allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+        }
+        
         // Look up admin details dynamically to show in replies
         let adminAvatar = '';
         let adminName = 'Bùi Trần Đức Thịnh'; // default name
-        try {
-            const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-            const adminUser = allUsers.find(u => u.username === 'admin');
-            if (adminUser) {
-                if (adminUser.avatar) {
-                    adminAvatar = adminUser.avatar;
-                }
-                if (adminUser.name) {
-                    adminName = adminUser.name;
-                }
+        const adminUser = allUsers.find(u => u.username === 'admin' || (u.email && u.email === 'btd.thinhoffice2012@gmail.com'));
+        if (adminUser) {
+            if (adminUser.avatar) {
+                adminAvatar = adminUser.avatar;
             }
-        } catch (e) {
-            console.log('Error looking up admin avatar for replies', e);
+            if (adminUser.name) {
+                adminName = adminUser.name;
+            }
         }
         
         if (list.length === 0) {
@@ -1092,31 +1139,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Try to find if this is a registered user to get their latest name, class, school, and avatar dynamically
             if (item.verified && item.email) {
-                try {
-                    const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-                    const matchedUser = allUsers.find(u => u.email.toLowerCase() === item.email.toLowerCase());
-                    if (matchedUser) {
-                        displayNameVal = matchedUser.name;
-                        userAvatar = matchedUser.avatar || '';
-                        
-                        // Parse class and school from matchedUser.classSchool
-                        if (matchedUser.classSchool) {
-                            if (matchedUser.classSchool.includes(' - ')) {
-                                const parts = matchedUser.classSchool.split(' - ');
-                                displayClass = parts[0].trim();
-                                displaySchool = parts[1].trim();
-                            } else {
-                                displayClass = matchedUser.classSchool;
-                                displaySchool = '';
-                            }
+                const matchedUser = allUsers.find(u => u.email && u.email.toLowerCase() === item.email.toLowerCase());
+                if (matchedUser) {
+                    displayNameVal = matchedUser.name;
+                    userAvatar = matchedUser.avatar || '';
+                    
+                    // Parse class and school from matchedUser.classSchool
+                    if (matchedUser.classSchool) {
+                        if (matchedUser.classSchool.includes(' - ')) {
+                            const parts = matchedUser.classSchool.split(' - ');
+                            displayClass = parts[0].trim();
+                            displaySchool = parts[1].trim();
+                        } else {
+                            displayClass = matchedUser.classSchool;
+                            displaySchool = '';
                         }
                     }
-                } catch (e) {
-                    console.log('Error looking up registered user details for feedback rendering', e);
                 }
             }
 
-            const avatarChar = displayNameVal.charAt(0).toUpperCase();
+            const avatarChar = (displayNameVal || 'U').charAt(0).toUpperCase();
             const starsStr = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
             
             // Mask phone number for privacy: e.g. 0967505247 -> 0967***247
@@ -1205,7 +1247,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${avatarHtml}
                             <div class="feedback-card-name-row">
                                 <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    <span class="feedback-card-name">${escapeHTML(item.name)}</span>
+                                    <span class="feedback-card-name">${escapeHTML(displayNameVal)}</span>
                                     ${verifiedBadgeHtml}
                                 </div>
                                 <span class="feedback-card-phone">${escapeHTML(displayPhone)}${classInfo}${schoolInfo}${emailInfo}</span>
@@ -1273,16 +1315,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event delegation for feedbacks (admin delete, replies)
     if (feedbackList) {
-        feedbackList.addEventListener('click', (e) => {
+        feedbackList.addEventListener('click', async (e) => {
             // 1. Delete feedback
             const deleteBtn = e.target.closest('.feedback-delete-btn');
             if (deleteBtn) {
                 const feedbackId = deleteBtn.dataset.id;
                 if (feedbackId && confirm('Bạn có chắc chắn muốn xóa đánh giá này không?')) {
-                    let feedbacks = getFeedbacks();
-                    feedbacks = feedbacks.filter(item => item.id !== feedbackId);
-                    localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
-                    renderFeedbacks();
+                    if (supabaseClient) {
+                        try {
+                            const { error } = await supabaseClient
+                                .from('portfolio_feedbacks')
+                                .delete()
+                                .eq('id', feedbackId);
+                            if (error) throw error;
+                        } catch (err) {
+                            console.error('Error deleting feedback from Supabase:', err);
+                            showToast('Lỗi khi xóa đánh giá trên hệ thống!');
+                            return;
+                        }
+                    } else {
+                        let feedbacks = getFeedbacks();
+                        feedbacks = feedbacks.filter(item => item.id !== feedbackId);
+                        localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
+                    }
+                    await renderFeedbacks();
                     showToast('Đã xóa đánh giá thành công.');
                 }
                 return;
@@ -1329,15 +1385,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                let feedbacks = getFeedbacks();
-                const fbIndex = feedbacks.findIndex(item => item.id === id);
-                if (fbIndex !== -1) {
-                    feedbacks[fbIndex].reply = replyText;
-                    feedbacks[fbIndex].replyDate = new Date().toLocaleDateString('vi-VN');
-                    localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
-                    renderFeedbacks();
-                    showToast('Đã đăng phản hồi của bạn.');
+                if (supabaseClient) {
+                    try {
+                        const replyDate = new Date().toLocaleDateString('vi-VN');
+                        const { error } = await supabaseClient
+                            .from('portfolio_feedbacks')
+                            .update({ reply: replyText, replyDate: replyDate })
+                            .eq('id', id);
+                        if (error) throw error;
+                    } catch (err) {
+                        console.error('Error submitting reply to Supabase:', err);
+                        showToast('Lỗi khi đăng phản hồi trên hệ thống!');
+                        return;
+                    }
+                } else {
+                    let feedbacks = getFeedbacks();
+                    const fbIndex = feedbacks.findIndex(item => item.id === id);
+                    if (fbIndex !== -1) {
+                        feedbacks[fbIndex].reply = replyText;
+                        feedbacks[fbIndex].replyDate = new Date().toLocaleDateString('vi-VN');
+                        localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
+                    }
                 }
+                await renderFeedbacks();
+                showToast('Đã đăng phản hồi của bạn.');
                 return;
             }
 
@@ -1346,15 +1417,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (replyDeleteBtn) {
                 const id = replyDeleteBtn.dataset.id;
                 if (id && confirm('Bạn có chắc chắn muốn xóa phản hồi này không?')) {
-                    let feedbacks = getFeedbacks();
-                    const fbIndex = feedbacks.findIndex(item => item.id === id);
-                    if (fbIndex !== -1) {
-                        delete feedbacks[fbIndex].reply;
-                        delete feedbacks[fbIndex].replyDate;
-                        localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
-                        renderFeedbacks();
-                        showToast('Đã xóa phản hồi.');
+                    if (supabaseClient) {
+                        try {
+                            const { error } = await supabaseClient
+                                .from('portfolio_feedbacks')
+                                .update({ reply: null, replyDate: null })
+                                .eq('id', id);
+                            if (error) throw error;
+                        } catch (err) {
+                            console.error('Error deleting reply from Supabase:', err);
+                            showToast('Lỗi khi xóa phản hồi trên hệ thống!');
+                            return;
+                        }
+                    } else {
+                        let feedbacks = getFeedbacks();
+                        const fbIndex = feedbacks.findIndex(item => item.id === id);
+                        if (fbIndex !== -1) {
+                            delete feedbacks[fbIndex].reply;
+                            delete feedbacks[fbIndex].replyDate;
+                            localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
+                        }
                     }
+                    await renderFeedbacks();
+                    showToast('Đã xóa phản hồi.');
                 }
                 return;
             }
@@ -1670,8 +1755,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropdownUserRole = document.getElementById('dropdown-user-role');
 
     // Initialize default admin user if not exists
-    function initDefaultUsers() {
-        let users = localStorage.getItem('portfolio_users');
+    async function initDefaultUsers() {
         const defaultAdmin = {
             name: 'Bùi Trần Đức Thịnh',
             username: 'admin',
@@ -1681,19 +1765,36 @@ document.addEventListener('DOMContentLoaded', () => {
             role: 'admin'
         };
 
-        if (!users) {
-            localStorage.setItem('portfolio_users', JSON.stringify([defaultAdmin]));
-        } else {
+        if (supabaseClient) {
             try {
-                let userList = JSON.parse(users);
-                const adminIndex = userList.findIndex(u => u.username === 'admin');
-                if (adminIndex === -1) {
-                    userList.push(defaultAdmin);
-                    localStorage.setItem('portfolio_users', JSON.stringify(userList));
+                const { data: adminUser, error } = await supabaseClient
+                    .from('portfolio_public_users')
+                    .select('username')
+                    .eq('username', 'admin')
+                    .maybeSingle();
+                
+                if (!adminUser && !error) {
+                    await supabaseClient.from('portfolio_users').insert([defaultAdmin]);
                 }
             } catch (e) {
-                localStorage.removeItem('portfolio_users');
-                initDefaultUsers();
+                console.error('Error initializing default admin in Supabase:', e);
+            }
+        } else {
+            let users = localStorage.getItem('portfolio_users');
+            if (!users) {
+                localStorage.setItem('portfolio_users', JSON.stringify([defaultAdmin]));
+            } else {
+                try {
+                    let userList = JSON.parse(users);
+                    const adminIndex = userList.findIndex(u => u.username === 'admin');
+                    if (adminIndex === -1) {
+                        userList.push(defaultAdmin);
+                        localStorage.setItem('portfolio_users', JSON.stringify(userList));
+                    }
+                } catch (e) {
+                    localStorage.removeItem('portfolio_users');
+                    initDefaultUsers();
+                }
             }
         }
     }
@@ -1705,6 +1806,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const session = JSON.parse(localStorage.getItem('portfolio_session') || 'null');
             if (!session) return null;
+            
+            if (supabaseClient) {
+                return session;
+            }
             
             // Sync with latest data from users list
             const users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
@@ -1726,7 +1831,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update Page UI based on login status
-    function updateAuthUI() {
+    async function updateAuthUI() {
         const user = getCurrentUser();
         
         if (user) {
@@ -1735,7 +1840,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userMenuWrapper) userMenuWrapper.style.display = 'block';
             
             // Set user profile info
-            const avatarChar = user.name.charAt(0).toUpperCase();
+            const avatarChar = (user.name || 'U').charAt(0).toUpperCase();
             if (headerUserAvatar) {
                 if (user.avatar) {
                     headerUserAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
@@ -1828,32 +1933,44 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Sync homepage main avatar, name, and footer (for Bùi Trần Đức Thịnh - admin)
         try {
-            const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-            const adminUser = allUsers.find(u => u.username === 'admin');
-            
-            // Sync Avatar
-            const mainAvatarImg = document.querySelector('.profile-panel img.avatar-img');
-            if (mainAvatarImg && adminUser && adminUser.avatar) {
-                mainAvatarImg.src = adminUser.avatar;
+            let adminUser = null;
+            if (supabaseClient) {
+                const { data } = await supabaseClient
+                    .from('portfolio_public_users')
+                    .select('name, avatar')
+                    .eq('username', 'admin')
+                    .maybeSingle();
+                adminUser = data;
+            } else {
+                const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                adminUser = allUsers.find(u => u.username === 'admin');
             }
             
-            // Sync Hero Title Name
-            const heroTitle = document.querySelector('.hero-title');
-            if (heroTitle && adminUser && adminUser.name) {
-                heroTitle.textContent = adminUser.name;
-            }
-            
-            // Sync Footer Copyright
-            const footerCopyright = document.getElementById('footer-copyright');
-            if (footerCopyright && adminUser && adminUser.name) {
-                footerCopyright.innerHTML = `Thiết kế & Lập trình bởi ${adminUser.name} © 2026. Mọi quyền được bảo lưu.`;
+            if (adminUser) {
+                // Sync Avatar
+                const mainAvatarImg = document.querySelector('.profile-panel img.avatar-img');
+                if (mainAvatarImg && adminUser.avatar) {
+                    mainAvatarImg.src = adminUser.avatar;
+                }
+                
+                // Sync Hero Title Name
+                const heroTitle = document.querySelector('.hero-title');
+                if (heroTitle && adminUser.name) {
+                    heroTitle.textContent = adminUser.name;
+                }
+                
+                // Sync Footer Copyright
+                const footerCopyright = document.getElementById('footer-copyright');
+                if (footerCopyright && adminUser.name) {
+                    footerCopyright.innerHTML = `Thiết kế & Lập trình bởi ${adminUser.name} © 2026. Mọi quyền được bảo lưu.`;
+                }
             }
         } catch (e) {
             console.log('Error syncing main avatar, name, or footer copyright', e);
         }
         
         // Re-render feedbacks to reflect verified badges and delete buttons
-        renderFeedbacks();
+        await renderFeedbacks();
     }
 
     // Modal Open/Close handling
@@ -1969,7 +2086,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Register Form Submit
     if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const name = document.getElementById('register-name').value.trim();
@@ -1989,93 +2106,185 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            try {
-                let users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-                
-                // Check if username already exists
-                const userExists = users.some(u => u.username === username);
-                if (userExists) {
-                    showToast('Tên đăng nhập đã được sử dụng! Vui lòng chọn tên khác.');
-                    return;
+            if (supabaseClient) {
+                try {
+                    // Check if username already exists
+                    const { data: userByUsername } = await supabaseClient
+                        .from('portfolio_users')
+                        .select('username')
+                        .eq('username', username)
+                        .maybeSingle();
+                    if (userByUsername) {
+                        showToast('Tên đăng nhập đã được sử dụng! Vui lòng chọn tên khác.');
+                        return;
+                    }
+                    
+                    // Check if email already exists
+                    const { data: userByEmail } = await supabaseClient
+                        .from('portfolio_users')
+                        .select('email')
+                        .eq('email', email)
+                        .maybeSingle();
+                    if (userByEmail) {
+                        showToast('Email đã được đăng ký! Vui lòng sử dụng email khác.');
+                        return;
+                    }
+                    
+                    // Save new user
+                    const newUser = {
+                        name,
+                        username,
+                        email,
+                        password,
+                        classSchool,
+                        role: 'member'
+                    };
+                    const { error } = await supabaseClient.from('portfolio_users').insert([newUser]);
+                    if (error) throw error;
+                    
+                    showToast('Đăng ký tài khoản thành công! Hãy đăng nhập.');
+                    registerForm.reset();
+                    switchTab('login');
+                    
+                    // Pre-fill login username
+                    const loginUserField = document.getElementById('login-username');
+                    if (loginUserField) loginUserField.value = username;
+                    
+                } catch (err) {
+                    showToast('Đã xảy ra lỗi: ' + (err.message || err));
+                    console.error(err);
                 }
-                
-                // Check if email already exists
-                const emailExists = users.some(u => u.email === email);
-                if (emailExists) {
-                    showToast('Email đã được đăng ký! Vui lòng sử dụng email khác.');
-                    return;
+            } else {
+                try {
+                    let users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                    
+                    // Check if username already exists
+                    const userExists = users.some(u => u.username === username);
+                    if (userExists) {
+                        showToast('Tên đăng nhập đã được sử dụng! Vui lòng chọn tên khác.');
+                        return;
+                    }
+                    
+                    // Check if email already exists
+                    const emailExists = users.some(u => u.email === email);
+                    if (emailExists) {
+                        showToast('Email đã được đăng ký! Vui lòng sử dụng email khác.');
+                        return;
+                    }
+                    
+                    // Save new user
+                    const newUser = {
+                        name,
+                        username,
+                        email,
+                        password,
+                        classSchool,
+                        role: 'member'
+                    };
+                    
+                    users.push(newUser);
+                    localStorage.setItem('portfolio_users', JSON.stringify(users));
+                    
+                    showToast('Đăng ký tài khoản thành công! Hãy đăng nhập.');
+                    registerForm.reset();
+                    switchTab('login');
+                    
+                    // Pre-fill login username
+                    const loginUserField = document.getElementById('login-username');
+                    if (loginUserField) loginUserField.value = username;
+                    
+                } catch (err) {
+                    showToast('Đã xảy ra lỗi trong quá trình đăng ký!');
+                    console.error(err);
                 }
-                
-                // Save new user
-                const newUser = {
-                    name,
-                    username,
-                    email,
-                    password,
-                    classSchool,
-                    role: 'member'
-                };
-                
-                users.push(newUser);
-                localStorage.setItem('portfolio_users', JSON.stringify(users));
-                
-                showToast('Đăng ký tài khoản thành công! Hãy đăng nhập.');
-                registerForm.reset();
-                switchTab('login');
-                
-                // Pre-fill login username
-                const loginUserField = document.getElementById('login-username');
-                if (loginUserField) loginUserField.value = username;
-                
-            } catch (err) {
-                showToast('Đã xảy ra lỗi trong quá trình đăng ký!');
-                console.error(err);
             }
         });
     }
 
     // Login Form Submit
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const usernameOrEmail = document.getElementById('login-username').value.trim().toLowerCase();
             const passwordVal = document.getElementById('login-password').value;
             
-            try {
-                const users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-                
-                // Look up user
-                const user = users.find(u => u.username === usernameOrEmail || u.email.toLowerCase() === usernameOrEmail);
-                
-                if (!user || user.password !== passwordVal) {
-                    showToast('Tên đăng nhập hoặc mật khẩu không chính xác!');
-                    return;
+            if (supabaseClient) {
+                try {
+                    // Call RPC function to safely verify credentials inside the database
+                    const { data: usersList, error } = await supabaseClient
+                        .rpc('login_user', { 
+                            p_username_or_email: usernameOrEmail, 
+                            p_password: passwordVal 
+                        });
+                        
+                    const user = usersList && usersList[0];
+                        
+                    if (error || !user) {
+                        showToast('Tên đăng nhập hoặc mật khẩu không chính xác!');
+                        return;
+                    }
+                    
+                    // Save session
+                    localStorage.setItem('portfolio_session', JSON.stringify({
+                        name: user.name,
+                        username: user.username,
+                        email: user.email,
+                        classSchool: user.classSchool,
+                        role: user.role,
+                        avatar: user.avatar || ''
+                    }));
+                    
+                    showToast(`Chào mừng ${user.name} đã quay trở lại!`);
+                    loginForm.reset();
+                    
+                    if (authModal) {
+                        authModal.classList.remove('show');
+                        authModal.setAttribute('aria-hidden', 'true');
+                    }
+                    
+                    updateAuthUI();
+                    
+                } catch (err) {
+                    showToast('Đã xảy ra lỗi: ' + (err.message || err));
+                    console.error(err);
                 }
-                
-                // Save session (including avatar)
-                localStorage.setItem('portfolio_session', JSON.stringify({
-                    name: user.name,
-                    username: user.username,
-                    email: user.email,
-                    classSchool: user.classSchool,
-                    role: user.role,
-                    avatar: user.avatar || ''
-                }));
-                
-                showToast(`Chào mừng ${user.name} đã quay trở lại!`);
-                loginForm.reset();
-                
-                if (authModal) {
-                    authModal.classList.remove('show');
-                    authModal.setAttribute('aria-hidden', 'true');
+            } else {
+                try {
+                    const users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                    
+                    // Look up user
+                    const user = users.find(u => u.username === usernameOrEmail || (u.email && u.email.toLowerCase() === usernameOrEmail));
+                    
+                    if (!user || user.password !== passwordVal) {
+                        showToast('Tên đăng nhập hoặc mật khẩu không chính xác!');
+                        return;
+                    }
+                    
+                    // Save session (including avatar)
+                    localStorage.setItem('portfolio_session', JSON.stringify({
+                        name: user.name,
+                        username: user.username,
+                        email: user.email,
+                        classSchool: user.classSchool,
+                        role: user.role,
+                        avatar: user.avatar || ''
+                    }));
+                    
+                    showToast(`Chào mừng ${user.name} đã quay trở lại!`);
+                    loginForm.reset();
+                    
+                    if (authModal) {
+                        authModal.classList.remove('show');
+                        authModal.setAttribute('aria-hidden', 'true');
+                    }
+                    
+                    updateAuthUI();
+                    
+                } catch (err) {
+                    showToast('Đã xảy ra lỗi trong quá trình đăng nhập!');
+                    console.error(err);
                 }
-                
-                updateAuthUI();
-                
-            } catch (err) {
-                showToast('Đã xảy ra lỗi trong quá trình đăng nhập!');
-                console.error(err);
             }
         });
     }
@@ -2187,7 +2396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (profileForm) {
-        profileForm.addEventListener('submit', (e) => {
+        profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const newName = document.getElementById('profile-name').value.trim();
@@ -2202,46 +2411,88 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            try {
-                let users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
-                const userIndex = users.findIndex(u => u.username === currentUser.username);
-                
-                if (userIndex === -1) {
-                    showToast('Không tìm thấy thông tin tài khoản!');
-                    return;
+            if (supabaseClient) {
+                try {
+                    const updateData = {
+                        name: newName,
+                        classSchool: newClassSchool,
+                        avatar: tempAvatarBase64
+                    };
+                    if (newPassword) {
+                        updateData.password = newPassword;
+                    }
+                    
+                    const { error } = await supabaseClient
+                        .from('portfolio_users')
+                        .update(updateData)
+                        .eq('username', currentUser.username);
+                        
+                    if (error) throw error;
+                    
+                    // Update session
+                    const updatedUserSession = {
+                        ...currentUser,
+                        name: newName,
+                        classSchool: newClassSchool,
+                        avatar: tempAvatarBase64
+                    };
+                    localStorage.setItem('portfolio_session', JSON.stringify(updatedUserSession));
+                    
+                    showToast('Cập nhật thông tin cá nhân thành công!');
+                    
+                    if (profileModal) {
+                        profileModal.classList.remove('show');
+                        profileModal.setAttribute('aria-hidden', 'true');
+                    }
+                    
+                    updateAuthUI();
+                    
+                } catch (err) {
+                    showToast('Đã xảy ra lỗi trong quá trình cập nhật hồ sơ!');
+                    console.error(err);
                 }
-                
-                // Update user details
-                users[userIndex].name = newName;
-                users[userIndex].classSchool = newClassSchool;
-                users[userIndex].avatar = tempAvatarBase64;
-                if (newPassword) {
-                    users[userIndex].password = newPassword;
+            } else {
+                try {
+                    let users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                    const userIndex = users.findIndex(u => u.username === currentUser.username);
+                    
+                    if (userIndex === -1) {
+                        showToast('Không tìm thấy thông tin tài khoản!');
+                        return;
+                    }
+                    
+                    // Update user details
+                    users[userIndex].name = newName;
+                    users[userIndex].classSchool = newClassSchool;
+                    users[userIndex].avatar = tempAvatarBase64;
+                    if (newPassword) {
+                        users[userIndex].password = newPassword;
+                    }
+                    
+                    localStorage.setItem('portfolio_users', JSON.stringify(users));
+                    
+                    // Update session
+                    const updatedUserSession = {
+                        ...currentUser,
+                        name: newName,
+                        classSchool: newClassSchool,
+                        avatar: tempAvatarBase64
+                    };
+                    localStorage.setItem('portfolio_session', JSON.stringify(updatedUserSession));
+                    
+                    showToast('Cập nhật thông tin cá nhân thành công!');
+                    
+                    if (profileModal) {
+                        profileModal.classList.remove('show');
+                        profileModal.setAttribute('aria-hidden', 'true');
+                    }
+                    
+                    updateAuthUI();
+                    
+                } catch (err) {
+                    showToast('Đã xảy ra lỗi trong quá trình cập nhật hồ sơ!');
+                    console.error(err);
                 }
-                
-                localStorage.setItem('portfolio_users', JSON.stringify(users));
-                
-                // Update session
-                const updatedUserSession = {
-                    ...currentUser,
-                    name: newName,
-                    classSchool: newClassSchool,
-                    avatar: tempAvatarBase64
-                };
-                localStorage.setItem('portfolio_session', JSON.stringify(updatedUserSession));
-                
-                showToast('Cập nhật thông tin cá nhân thành công!');
-                
-                if (profileModal) {
-                    profileModal.classList.remove('show');
-                    profileModal.setAttribute('aria-hidden', 'true');
-                }
-                
-                updateAuthUI();
-                
-            } catch (err) {
-                showToast('Đã xảy ra lỗi trong quá trình cập nhật hồ sơ!');
-                console.error(err);
             }
         });
     }
