@@ -1927,13 +1927,21 @@ body.dark .skill-card:hover .skill-icon-wrapper {
     z-index: 1;
 }
 
-.feedback-container {
-    max-width: 800px;
-    margin: 0 auto;
+.feedback-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+@media (max-width: 1024px) {
+    .feedback-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
 }
 
 .feedback-desc {
-    text-align: center;
     color: var(--text-secondary);
     margin-bottom: 2rem;
     font-size: 1.05rem;
@@ -1957,7 +1965,7 @@ body.dark .feedback-form {
 .feedback-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
     margin-bottom: 1.5rem;
 }
 
@@ -1970,6 +1978,196 @@ body.dark .feedback-form {
     .feedback-form {
         padding: 2rem 1.5rem;
     }
+}
+
+/* Feedback List & Stats Styles */
+.feedback-list-col {
+    background: rgba(255, 255, 255, 0.52);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2.5rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+body.dark .feedback-list-col {
+    background: rgba(15, 34, 58, 0.45);
+    border-color: rgba(56, 189, 248, 0.1);
+}
+
+.feedback-list-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.25rem;
+}
+
+.feedback-list-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.feedback-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.feedback-avg-score {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #f59e0b;
+    line-height: 1;
+}
+
+.feedback-avg-stars {
+    color: #f59e0b;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.feedback-total-count {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.feedback-list {
+    max-height: 480px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-right: 0.5rem;
+}
+
+/* Custom Scrollbar for Feedback List */
+.feedback-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feedback-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.feedback-list::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.feedback-list::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Feedback Card Styles */
+.feedback-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    animation: feedbackSlideIn 0.5s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+@keyframes feedbackSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(37, 99, 235, 0.25);
+}
+
+body.dark .feedback-card:hover {
+    border-color: rgba(56, 189, 248, 0.25);
+}
+
+.feedback-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.feedback-card-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.feedback-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), #0d9488);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+}
+
+.feedback-card-name-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-card-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.feedback-card-phone {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.feedback-card-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+}
+
+.feedback-card-stars {
+    color: #f59e0b;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.feedback-card-content {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.feedback-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+    font-style: italic;
 }
 
 /* Star Rating Styles */

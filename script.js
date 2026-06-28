@@ -985,11 +985,126 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // --- Feedback Form Interactive Submission Handler ---
+    // --- Feedback Form & Persistent Storage Handler ---
     const feedbackForm = document.getElementById('feedbackForm');
     const feedbackStars = document.querySelectorAll('.star-rating input[name="rating"]');
     const feedbackRatingLabel = document.getElementById('feedbackRatingLabel');
+    const feedbackList = document.getElementById('feedbackList');
+    const feedbackAvgScore = document.getElementById('feedbackAvgScore');
+    const feedbackAvgStars = document.getElementById('feedbackAvgStars');
+    const feedbackTotalCount = document.getElementById('feedbackTotalCount');
 
+    // Default Mock Feedbacks (Set to empty for real reviews only)
+    const defaultFeedbacks = [];
+
+    function getFeedbacks() {
+        let stored = localStorage.getItem('portfolio_feedbacks');
+        if (!stored) {
+            localStorage.setItem('portfolio_feedbacks', JSON.stringify([]));
+            return [];
+        }
+        try {
+            let list = JSON.parse(stored);
+            // Clean up any old mock data from previous tests
+            list = list.filter(item => item.name !== "Nguyễn Hoàng Long" && item.name !== "Trần Minh Thư");
+            return list;
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function saveFeedback(newFeedback) {
+        const list = getFeedbacks();
+        list.unshift(newFeedback);
+        localStorage.setItem('portfolio_feedbacks', JSON.stringify(list));
+        renderFeedbacks();
+    }
+
+    function renderFeedbacks() {
+        if (!feedbackList) return;
+        const list = getFeedbacks();
+        
+        if (list.length === 0) {
+            feedbackList.innerHTML = `
+                <div class="feedback-empty-state">
+                    <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>
+                </div>
+            `;
+            if (feedbackAvgScore) feedbackAvgScore.textContent = '0.0';
+            if (feedbackAvgStars) feedbackAvgStars.textContent = '☆☆☆☆☆';
+            if (feedbackTotalCount) feedbackTotalCount.textContent = '(0 đánh giá)';
+            return;
+        }
+
+        // Calculate Stats
+        const total = list.length;
+        const sum = list.reduce((acc, curr) => acc + Number(curr.rating), 0);
+        const avg = (sum / total).toFixed(1);
+        
+        if (feedbackAvgScore) feedbackAvgScore.textContent = avg;
+        if (feedbackTotalCount) feedbackTotalCount.textContent = `(${total} đánh giá)`;
+        
+        if (feedbackAvgStars) {
+            const fullStars = Math.round(avg);
+            feedbackAvgStars.textContent = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+        }
+
+        // Render Cards
+        feedbackList.innerHTML = list.map(item => {
+            const avatarChar = item.name.charAt(0).toUpperCase();
+            const starsStr = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
+            
+            // Mask phone number for privacy: e.g. 0967505247 -> 0967***247
+            let displayPhone = item.phone || '';
+            if (displayPhone.length >= 7) {
+                displayPhone = displayPhone.substring(0, 4) + '***' + displayPhone.substring(displayPhone.length - 3);
+            }
+
+            return `
+                <div class="feedback-card">
+                    <div class="feedback-card-header">
+                        <div class="feedback-card-user">
+                            <span class="feedback-card-avatar" style="background: ${getAvatarGradient(avatarChar)}">${avatarChar}</span>
+                            <div class="feedback-card-name-row">
+                                <span class="feedback-card-name">${escapeHTML(item.name)}</span>
+                                <span class="feedback-card-phone">${escapeHTML(displayPhone)}</span>
+                            </div>
+                        </div>
+                        <div class="feedback-card-stars">${starsStr}</div>
+                    </div>
+                    <div class="feedback-card-body">
+                        <p class="feedback-card-content">${escapeHTML(item.message)}</p>
+                        <div class="feedback-card-date">${escapeHTML(item.date)}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function getAvatarGradient(char) {
+        const colors = [
+            'linear-gradient(135deg, #2563eb, #0d9488)',
+            'linear-gradient(135deg, #4f46e5, #06b6d4)',
+            'linear-gradient(135deg, #7c3aed, #ec4899)',
+            'linear-gradient(135deg, #b91c1c, #d97706)',
+            'linear-gradient(135deg, #059669, #10b981)',
+            'linear-gradient(135deg, #db2777, #7c3aed)',
+            'linear-gradient(135deg, #1e3a8a, #3b82f6)'
+        ];
+        const index = char.charCodeAt(0) % colors.length;
+        return colors[index];
+    }
+
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // Set up star text label on change
     if (feedbackStars.length > 0 && feedbackRatingLabel) {
         const ratingTexts = {
             '1': 'Rất tệ (1/5 ★)',
@@ -1010,6 +1125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Initial render
+    renderFeedbacks();
+
+    // Form submit listener
     if (feedbackForm) {
         feedbackForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -1024,7 +1143,25 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Mock server timeout
             setTimeout(() => {
-                // Success feedback
+                // Collect values
+                const nameVal = document.getElementById('feedback-name').value;
+                const emailVal = document.getElementById('feedback-email').value;
+                const phoneVal = document.getElementById('feedback-phone').value;
+                const ratingVal = Number(document.querySelector('.star-rating input[name="rating"]:checked').value);
+                const messageVal = document.getElementById('feedback-message').value;
+
+                // Save feedback to storage & reload DOM
+                const newFeedbackObj = {
+                    name: nameVal,
+                    email: emailVal,
+                    phone: phoneVal,
+                    rating: ratingVal,
+                    message: messageVal,
+                    date: new Date().toLocaleDateString('vi-VN')
+                };
+                saveFeedback(newFeedbackObj);
+
+                // Success button feedback
                 submitBtn.textContent = 'Gửi thành công!';
                 submitBtn.style.backgroundColor = '#10b981'; // green color
                 submitBtn.style.color = '#ffffff';
