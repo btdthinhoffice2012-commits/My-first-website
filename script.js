@@ -1666,11 +1666,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const adminIndex = userList.findIndex(u => u.username === 'admin');
                 if (adminIndex === -1) {
                     userList.push(defaultAdmin);
-                } else {
-                    // Update password to the new requested one
-                    userList[adminIndex].password = 'Thinhchuyentin2012';
+                    localStorage.setItem('portfolio_users', JSON.stringify(userList));
                 }
-                localStorage.setItem('portfolio_users', JSON.stringify(userList));
             } catch (e) {
                 localStorage.removeItem('portfolio_users');
                 initDefaultUsers();
@@ -1680,10 +1677,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     initDefaultUsers();
 
-    // Get currently logged in user
+    // Get currently logged in user (retrieves the latest details from users database)
     function getCurrentUser() {
         try {
-            return JSON.parse(localStorage.getItem('portfolio_session') || 'null');
+            const session = JSON.parse(localStorage.getItem('portfolio_session') || 'null');
+            if (!session) return null;
+            
+            // Sync with latest data from users list
+            const users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+            const latestUser = users.find(u => u.username === session.username);
+            if (latestUser) {
+                return {
+                    ...session,
+                    name: latestUser.name,
+                    email: latestUser.email,
+                    classSchool: latestUser.classSchool,
+                    role: latestUser.role,
+                    avatar: latestUser.avatar || ''
+                };
+            }
+            return session;
         } catch (e) {
             return null;
         }
@@ -1790,16 +1803,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Sync homepage main avatar (for Bùi Trần Đức Thịnh - admin)
+        // Sync homepage main avatar, name, and footer (for Bùi Trần Đức Thịnh - admin)
         try {
             const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
             const adminUser = allUsers.find(u => u.username === 'admin');
+            
+            // Sync Avatar
             const mainAvatarImg = document.querySelector('.profile-panel img.avatar-img');
             if (mainAvatarImg && adminUser && adminUser.avatar) {
                 mainAvatarImg.src = adminUser.avatar;
             }
+            
+            // Sync Hero Title Name
+            const heroTitle = document.querySelector('.hero-title');
+            if (heroTitle && adminUser && adminUser.name) {
+                heroTitle.textContent = adminUser.name;
+            }
+            
+            // Sync Footer Copyright
+            const footerCopyright = document.getElementById('footer-copyright');
+            if (footerCopyright && adminUser && adminUser.name) {
+                footerCopyright.innerHTML = `Thiết kế & Lập trình bởi ${adminUser.name} © 2026. Mọi quyền được bảo lưu.`;
+            }
         } catch (e) {
-            console.log('Error syncing main avatar', e);
+            console.log('Error syncing main avatar, name, or footer copyright', e);
         }
         
         // Re-render feedbacks to reflect verified badges and delete buttons
@@ -2003,13 +2030,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                // Save session
+                // Save session (including avatar)
                 localStorage.setItem('portfolio_session', JSON.stringify({
                     name: user.name,
                     username: user.username,
                     email: user.email,
                     classSchool: user.classSchool,
-                    role: user.role
+                    role: user.role,
+                    avatar: user.avatar || ''
                 }));
                 
                 showToast(`Chào mừng ${user.name} đã quay trở lại!`);
