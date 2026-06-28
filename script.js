@@ -575,8 +575,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealElements = document.querySelectorAll('.reveal');
     const revealChildren = document.querySelectorAll('.skill-card, .project-card, .gear-card, .stat-card, .timeline-item, .flow-steps div, .contact-item, .feedback-form, .rating-group');
 
+    const isMobileViewport = window.innerWidth < 768 || isCoarsePointer;
+
     revealChildren.forEach((child, index) => {
-        child.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
+        const delay = isMobileViewport ? Math.min(index % 4, 3) * 40 : Math.min(index % 6, 5) * 70;
+        child.style.setProperty('--reveal-delay', `${delay}ms`);
         child.classList.add('reveal-child');
     });
     
@@ -591,8 +594,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, {
-        threshold: 0.18,
-        rootMargin: '-8% 0px -12% 0px'
+        threshold: isMobileViewport ? 0.05 : 0.12,
+        rootMargin: isMobileViewport ? '-3% 0px -5% 0px' : '-5% 0px -10% 0px'
     });
     
     revealElements.forEach(element => {
