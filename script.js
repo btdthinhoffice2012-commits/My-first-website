@@ -1040,6 +1040,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentUser = getCurrentUser();
         const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.username === 'admin');
         
+        // Look up admin avatar dynamically to show in replies
+        let adminAvatar = '';
+        try {
+            const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+            const adminUser = allUsers.find(u => u.username === 'admin');
+            if (adminUser && adminUser.avatar) {
+                adminAvatar = adminUser.avatar;
+            }
+        } catch (e) {
+            console.log('Error looking up admin avatar for replies', e);
+        }
+        
         if (list.length === 0) {
             feedbackList.innerHTML = `
                 <div class="feedback-empty-state">
@@ -1093,6 +1105,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const schoolInfo = item.school ? ` • Trường: ${escapeHTML(item.school)}` : '';
             const emailInfo = displayEmail ? ` • Email: ${escapeHTML(displayEmail)}` : '';
 
+            // Try to find if this is a registered user to get their current avatar dynamically
+            let userAvatar = item.avatar || '';
+            if (item.verified) {
+                try {
+                    const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                    const matchedUser = allUsers.find(u => u.name === item.name || u.email === item.email);
+                    if (matchedUser && matchedUser.avatar) {
+                        userAvatar = matchedUser.avatar;
+                    }
+                } catch (e) {
+                    console.log('Error looking up user avatar', e);
+                }
+            }
+
+            const avatarHtml = userAvatar
+                ? `<span class="feedback-card-avatar" style="background: none; border: 1px solid var(--border-color);"><img src="${userAvatar}" alt="${item.name}"></span>`
+                : `<span class="feedback-card-avatar" style="background: ${getAvatarGradient(avatarChar)}">${avatarChar}</span>`;
+
             // Verified Badge
             const verifiedBadgeHtml = item.verified 
                 ? `<span class="verified-badge" title="Đã xác thực tài khoản"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã xác minh</span>` 
@@ -1105,11 +1135,51 @@ document.addEventListener('DOMContentLoaded', () => {
                    </button>` 
                 : '';
 
+            // Admin Reply HTML if exists
+            const replyAvatarHtml = adminAvatar
+                ? `<span class="reply-avatar" style="background: none; border: 1px solid rgba(239, 68, 68, 0.2);"><img src="${adminAvatar}" alt="Admin"></span>`
+                : `<span class="reply-avatar" style="background: linear-gradient(135deg, #ef4444, #b91c1c)">T</span>`;
+
+            const replyHtml = item.reply
+                ? `<div class="feedback-admin-reply">
+                    <div class="reply-header">
+                        ${replyAvatarHtml}
+                        <div class="reply-meta">
+                            <span class="reply-name">Phản hồi từ Bùi Trần Đức Thịnh (Admin)</span>
+                            <span class="reply-date">${escapeHTML(item.replyDate || '')}</span>
+                        </div>
+                        ${isAdmin ? `
+                            <button type="button" class="reply-delete-btn" data-id="${item.id || ''}" title="Xóa phản hồi">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <p class="reply-content">${escapeHTML(item.reply)}</p>
+                   </div>`
+                : '';
+
+            // Reply Form for Admin if no reply exists yet
+            const replyActionHtml = (isAdmin && !item.reply)
+                ? `<div class="reply-action-area">
+                    <button type="button" class="btn btn-secondary btn-sm reply-toggle-btn" data-id="${item.id || ''}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
+                        Phản hồi
+                    </button>
+                    <div class="reply-form-wrapper" id="reply-form-${item.id || ''}" style="display: none; margin-top: 1rem;">
+                        <textarea class="reply-textarea" id="reply-text-${item.id || ''}" placeholder="Nhập phản hồi của bạn..." rows="2" required></textarea>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary btn-sm reply-cancel-btn" data-id="${item.id || ''}">Hủy</button>
+                            <button type="button" class="btn btn-primary btn-sm reply-submit-btn" data-id="${item.id || ''}">Gửi</button>
+                        </div>
+                    </div>
+                   </div>`
+                : '';
+
             return `
                 <div class="feedback-card" data-feedback-id="${item.id || ''}">
                     <div class="feedback-card-header">
                         <div class="feedback-card-user">
-                            <span class="feedback-card-avatar" style="background: ${getAvatarGradient(avatarChar)}">${avatarChar}</span>
+                            ${avatarHtml}
                             <div class="feedback-card-name-row">
                                 <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                                     <span class="feedback-card-name">${escapeHTML(item.name)}</span>
@@ -1127,6 +1197,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="feedback-card-content">${escapeHTML(item.message)}</p>
                         <div class="feedback-card-date">${escapeHTML(item.date)}</div>
                     </div>
+                    ${replyHtml}
+                    ${replyActionHtml}
                 </div>
             `;
         }).join('');
@@ -1176,9 +1248,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event delegation for admin delete button on feedbackList
+    // Event delegation for feedbacks (admin delete, replies)
     if (feedbackList) {
         feedbackList.addEventListener('click', (e) => {
+            // 1. Delete feedback
             const deleteBtn = e.target.closest('.feedback-delete-btn');
             if (deleteBtn) {
                 const feedbackId = deleteBtn.dataset.id;
@@ -1189,6 +1262,78 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderFeedbacks();
                     showToast('Đã xóa đánh giá thành công.');
                 }
+                return;
+            }
+
+            // 2. Toggle Reply Form
+            const replyToggleBtn = e.target.closest('.reply-toggle-btn');
+            if (replyToggleBtn) {
+                const id = replyToggleBtn.dataset.id;
+                const formWrapper = document.getElementById(`reply-form-${id}`);
+                if (formWrapper) {
+                    formWrapper.style.display = 'block';
+                    replyToggleBtn.style.display = 'none';
+                    const textarea = document.getElementById(`reply-text-${id}`);
+                    if (textarea) textarea.focus();
+                }
+                return;
+            }
+
+            // 3. Cancel Reply Form
+            const replyCancelBtn = e.target.closest('.reply-cancel-btn');
+            if (replyCancelBtn) {
+                const id = replyCancelBtn.dataset.id;
+                const formWrapper = document.getElementById(`reply-form-${id}`);
+                const toggleBtn = e.target.closest('.reply-action-area')?.querySelector('.reply-toggle-btn');
+                if (formWrapper) {
+                    formWrapper.style.display = 'none';
+                }
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'inline-flex';
+                }
+                return;
+            }
+
+            // 4. Submit Reply
+            const replySubmitBtn = e.target.closest('.reply-submit-btn');
+            if (replySubmitBtn) {
+                const id = replySubmitBtn.dataset.id;
+                const textarea = document.getElementById(`reply-text-${id}`);
+                const replyText = textarea ? textarea.value.trim() : '';
+
+                if (!replyText) {
+                    showToast('Vui lòng nhập nội dung phản hồi!');
+                    return;
+                }
+
+                let feedbacks = getFeedbacks();
+                const fbIndex = feedbacks.findIndex(item => item.id === id);
+                if (fbIndex !== -1) {
+                    feedbacks[fbIndex].reply = replyText;
+                    feedbacks[fbIndex].replyDate = new Date().toLocaleDateString('vi-VN');
+                    localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
+                    renderFeedbacks();
+                    showToast('Đã đăng phản hồi của bạn.');
+                }
+                return;
+            }
+
+            // 5. Delete Reply
+            const replyDeleteBtn = e.target.closest('.reply-delete-btn');
+            if (replyDeleteBtn) {
+                const id = replyDeleteBtn.dataset.id;
+                if (id && confirm('Bạn có chắc chắn muốn xóa phản hồi này không?')) {
+                    let feedbacks = getFeedbacks();
+                    const fbIndex = feedbacks.findIndex(item => item.id === id);
+                    if (fbIndex !== -1) {
+                        delete feedbacks[fbIndex].reply;
+                        delete feedbacks[fbIndex].replyDate;
+                        localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
+                        renderFeedbacks();
+                        showToast('Đã xóa phản hồi.');
+                    }
+                }
+                return;
             }
         });
     }
@@ -1504,33 +1649,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize default admin user if not exists
     function initDefaultUsers() {
         let users = localStorage.getItem('portfolio_users');
+        const defaultAdmin = {
+            name: 'Bùi Trần Đức Thịnh',
+            username: 'admin',
+            email: 'btd.thinhoffice2012@gmail.com',
+            password: 'Thinhchuyentin2012',
+            classSchool: 'Admin | Owner',
+            role: 'admin'
+        };
+
         if (!users) {
-            const defaultUsers = [
-                {
-                    name: 'Bùi Trần Đức Thịnh',
-                    username: 'admin',
-                    email: 'btd.thinhoffice2012@gmail.com',
-                    password: 'admin', // Demo password
-                    classSchool: 'Admin | Owner',
-                    role: 'admin'
-                }
-            ];
-            localStorage.setItem('portfolio_users', JSON.stringify(defaultUsers));
+            localStorage.setItem('portfolio_users', JSON.stringify([defaultAdmin]));
         } else {
             try {
                 let userList = JSON.parse(users);
-                const adminExists = userList.some(u => u.username === 'admin');
-                if (!adminExists) {
-                    userList.push({
-                        name: 'Bùi Trần Đức Thịnh',
-                        username: 'admin',
-                        email: 'btd.thinhoffice2012@gmail.com',
-                        password: 'admin',
-                        classSchool: 'Admin | Owner',
-                        role: 'admin'
-                    });
-                    localStorage.setItem('portfolio_users', JSON.stringify(userList));
+                const adminIndex = userList.findIndex(u => u.username === 'admin');
+                if (adminIndex === -1) {
+                    userList.push(defaultAdmin);
+                } else {
+                    // Update password to the new requested one
+                    userList[adminIndex].password = 'Thinhchuyentin2012';
                 }
+                localStorage.setItem('portfolio_users', JSON.stringify(userList));
             } catch (e) {
                 localStorage.removeItem('portfolio_users');
                 initDefaultUsers();
@@ -1561,9 +1701,31 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set user profile info
             const avatarChar = user.name.charAt(0).toUpperCase();
             if (headerUserAvatar) {
-                headerUserAvatar.textContent = avatarChar;
-                headerUserAvatar.style.background = getAvatarGradient(avatarChar);
+                if (user.avatar) {
+                    headerUserAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
+                    headerUserAvatar.style.background = 'none';
+                    headerUserAvatar.style.border = '1px solid var(--border-color)';
+                } else {
+                    headerUserAvatar.textContent = avatarChar;
+                    headerUserAvatar.style.background = getAvatarGradient(avatarChar);
+                    headerUserAvatar.style.border = '';
+                }
             }
+
+            // Dropdown menu avatar
+            const dropdownUserAvatar = document.getElementById('dropdown-user-avatar');
+            if (dropdownUserAvatar) {
+                if (user.avatar) {
+                    dropdownUserAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
+                    dropdownUserAvatar.style.background = 'none';
+                    dropdownUserAvatar.style.border = '1px solid var(--border-color)';
+                } else {
+                    dropdownUserAvatar.textContent = avatarChar;
+                    dropdownUserAvatar.style.background = getAvatarGradient(avatarChar);
+                    dropdownUserAvatar.style.border = '';
+                }
+            }
+            
             if (headerUserName) headerUserName.textContent = user.username;
             if (dropdownUserFullname) dropdownUserFullname.textContent = user.name;
             if (dropdownUserEmail) dropdownUserEmail.textContent = user.email;
@@ -1628,6 +1790,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        // Sync homepage main avatar (for Bùi Trần Đức Thịnh - admin)
+        try {
+            const allUsers = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+            const adminUser = allUsers.find(u => u.username === 'admin');
+            const mainAvatarImg = document.querySelector('.profile-panel img.avatar-img');
+            if (mainAvatarImg && adminUser && adminUser.avatar) {
+                mainAvatarImg.src = adminUser.avatar;
+            }
+        } catch (e) {
+            console.log('Error syncing main avatar', e);
+        }
+        
         // Re-render feedbacks to reflect verified badges and delete buttons
         renderFeedbacks();
     }
@@ -1638,6 +1812,26 @@ document.addEventListener('DOMContentLoaded', () => {
             authModal.classList.add('show');
             authModal.setAttribute('aria-hidden', 'false');
             switchTab('login');
+        });
+    }
+
+    const adminLoginLink = document.getElementById('admin-login-link');
+    if (adminLoginLink && authModal) {
+        adminLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModal.classList.add('show');
+            authModal.setAttribute('aria-hidden', 'false');
+            switchTab('login');
+            
+            // Pre-fill 'admin' username and focus password
+            const loginUserField = document.getElementById('login-username');
+            const loginPassField = document.getElementById('login-password');
+            if (loginUserField) {
+                loginUserField.value = 'admin';
+            }
+            if (loginPassField) {
+                setTimeout(() => loginPassField.focus(), 150);
+            }
         });
     }
 
@@ -1830,6 +2024,172 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             } catch (err) {
                 showToast('Đã xảy ra lỗi trong quá trình đăng nhập!');
+                console.error(err);
+            }
+        });
+    }
+
+    // --- Edit Profile Form handling ---
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    const profileModal = document.getElementById('profile-modal');
+    const profileModalClose = document.getElementById('profile-modal-close');
+    const profileForm = document.getElementById('profile-form');
+    const profileAvatarInput = document.getElementById('profile-avatar-input');
+    const profileAvatarPreview = document.getElementById('profile-avatar-preview');
+    let tempAvatarBase64 = '';
+
+    // Handle avatar file selection
+    if (profileAvatarInput) {
+        profileAvatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate size (1MB max)
+            if (file.size > 1024 * 1024) {
+                showToast('Dung lượng ảnh vượt quá 1MB! Vui lòng chọn ảnh nhẹ hơn.');
+                profileAvatarInput.value = '';
+                return;
+            }
+
+            // Validate type
+            if (!file.type.startsWith('image/')) {
+                showToast('Vui lòng chọn định dạng ảnh hợp lệ (PNG, JPG, GIF...)!');
+                profileAvatarInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                tempAvatarBase64 = event.target.result;
+                if (profileAvatarPreview) {
+                    profileAvatarPreview.innerHTML = `<img src="${tempAvatarBase64}" alt="Avatar Preview">`;
+                    profileAvatarPreview.style.background = 'none';
+                    profileAvatarPreview.style.border = '1px solid var(--border-color)';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (editProfileBtn && profileModal) {
+        editProfileBtn.addEventListener('click', () => {
+            // Close dropdown first
+            if (userDropdown) userDropdown.classList.remove('show');
+            if (userMenuWrapper) userMenuWrapper.classList.remove('active');
+            
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            // Pre-fill
+            const profileNameInput = document.getElementById('profile-name');
+            const profileClassSchoolInput = document.getElementById('profile-class-school');
+            const profilePassInput = document.getElementById('profile-password');
+            
+            if (profileNameInput) profileNameInput.value = user.name || '';
+            if (profileClassSchoolInput) profileClassSchoolInput.value = user.classSchool || '';
+            if (profilePassInput) profilePassInput.value = '';
+            
+            // Get user avatar
+            tempAvatarBase64 = user.avatar || '';
+            if (profileAvatarPreview) {
+                if (tempAvatarBase64) {
+                    profileAvatarPreview.innerHTML = `<img src="${tempAvatarBase64}" alt="Avatar Preview">`;
+                    profileAvatarPreview.style.background = 'none';
+                    profileAvatarPreview.style.border = '1px solid var(--border-color)';
+                } else {
+                    const initials = (user.name || 'U').charAt(0).toUpperCase();
+                    profileAvatarPreview.textContent = initials;
+                    profileAvatarPreview.style.background = getAvatarGradient(initials);
+                    profileAvatarPreview.style.border = '';
+                }
+            }
+
+            if (profileAvatarInput) profileAvatarInput.value = '';
+            
+            profileModal.classList.add('show');
+            profileModal.setAttribute('aria-hidden', 'false');
+        });
+    }
+
+    if (profileModalClose && profileModal) {
+        profileModalClose.addEventListener('click', () => {
+            profileModal.classList.remove('show');
+            profileModal.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    if (profileModal) {
+        profileModal.addEventListener('click', (e) => {
+            if (e.target === profileModal) {
+                profileModal.classList.remove('show');
+                profileModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    }
+
+    // Close on Escape
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && profileModal && profileModal.classList.contains('show')) {
+            profileModal.classList.remove('show');
+            profileModal.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    if (profileForm) {
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newName = document.getElementById('profile-name').value.trim();
+            const newClassSchool = document.getElementById('profile-class-school').value.trim();
+            const newPassword = document.getElementById('profile-password').value;
+            
+            const currentUser = getCurrentUser();
+            if (!currentUser) return;
+            
+            if (newPassword && newPassword.length < 6) {
+                showToast('Mật khẩu mới phải chứa ít nhất 6 ký tự!');
+                return;
+            }
+            
+            try {
+                let users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                const userIndex = users.findIndex(u => u.username === currentUser.username);
+                
+                if (userIndex === -1) {
+                    showToast('Không tìm thấy thông tin tài khoản!');
+                    return;
+                }
+                
+                // Update user details
+                users[userIndex].name = newName;
+                users[userIndex].classSchool = newClassSchool;
+                users[userIndex].avatar = tempAvatarBase64;
+                if (newPassword) {
+                    users[userIndex].password = newPassword;
+                }
+                
+                localStorage.setItem('portfolio_users', JSON.stringify(users));
+                
+                // Update session
+                const updatedUserSession = {
+                    ...currentUser,
+                    name: newName,
+                    classSchool: newClassSchool,
+                    avatar: tempAvatarBase64
+                };
+                localStorage.setItem('portfolio_session', JSON.stringify(updatedUserSession));
+                
+                showToast('Cập nhật thông tin cá nhân thành công!');
+                
+                if (profileModal) {
+                    profileModal.classList.remove('show');
+                    profileModal.setAttribute('aria-hidden', 'true');
+                }
+                
+                updateAuthUI();
+                
+            } catch (err) {
+                showToast('Đã xảy ra lỗi trong quá trình cập nhật hồ sơ!');
                 console.error(err);
             }
         });
