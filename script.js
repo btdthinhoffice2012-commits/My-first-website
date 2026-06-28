@@ -1007,6 +1007,19 @@ document.addEventListener('DOMContentLoaded', () => {
             let list = JSON.parse(stored);
             // Clean up any old mock data from previous tests
             list = list.filter(item => item.name !== "Nguyễn Hoàng Long" && item.name !== "Trần Minh Thư");
+            
+            // Ensure every feedback has a unique ID
+            let changed = false;
+            list = list.map((item, idx) => {
+                if (!item.id) {
+                    item.id = 'legacy-' + idx + '-' + (item.date ? item.date.replace(/\//g, '-') : Date.now());
+                    changed = true;
+                }
+                return item;
+            });
+            if (changed) {
+                localStorage.setItem('portfolio_feedbacks', JSON.stringify(list));
+            }
             return list;
         } catch(e) {
             return [];
@@ -1023,6 +1036,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderFeedbacks() {
         if (!feedbackList) return;
         const list = getFeedbacks();
+        
+        const currentUser = getCurrentUser();
+        const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.username === 'admin');
         
         if (list.length === 0) {
             feedbackList.innerHTML = `
@@ -1060,17 +1076,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayPhone = displayPhone.substring(0, 4) + '***' + displayPhone.substring(displayPhone.length - 3);
             }
 
+            // Mask email for privacy: e.g. user@gmail.com -> us***@gmail.com
+            let displayEmail = item.email || '';
+            if (displayEmail.includes('@')) {
+                const emailParts = displayEmail.split('@');
+                const emailUser = emailParts[0];
+                const emailDomain = emailParts[1];
+                if (emailUser.length > 2) {
+                    displayEmail = emailUser.substring(0, 2) + '***@' + emailDomain;
+                } else if (emailUser.length > 0) {
+                    displayEmail = emailUser.substring(0, 1) + '***@' + emailDomain;
+                }
+            }
+
+            const classInfo = item.class ? ` • Lớp: ${escapeHTML(item.class)}` : '';
+            const schoolInfo = item.school ? ` • Trường: ${escapeHTML(item.school)}` : '';
+            const emailInfo = displayEmail ? ` • Email: ${escapeHTML(displayEmail)}` : '';
+
+            // Verified Badge
+            const verifiedBadgeHtml = item.verified 
+                ? `<span class="verified-badge" title="Đã xác thực tài khoản"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã xác minh</span>` 
+                : '';
+            
+            // Delete button for Admin
+            const deleteBtnHtml = isAdmin 
+                ? `<button type="button" class="feedback-delete-btn" data-id="${item.id || ''}" title="Xóa đánh giá">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                   </button>` 
+                : '';
+
             return `
-                <div class="feedback-card">
+                <div class="feedback-card" data-feedback-id="${item.id || ''}">
                     <div class="feedback-card-header">
                         <div class="feedback-card-user">
                             <span class="feedback-card-avatar" style="background: ${getAvatarGradient(avatarChar)}">${avatarChar}</span>
                             <div class="feedback-card-name-row">
-                                <span class="feedback-card-name">${escapeHTML(item.name)}</span>
-                                <span class="feedback-card-phone">${escapeHTML(displayPhone)}</span>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                    <span class="feedback-card-name">${escapeHTML(item.name)}</span>
+                                    ${verifiedBadgeHtml}
+                                </div>
+                                <span class="feedback-card-phone">${escapeHTML(displayPhone)}${classInfo}${schoolInfo}${emailInfo}</span>
                             </div>
                         </div>
-                        <div class="feedback-card-stars">${starsStr}</div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="feedback-card-stars">${starsStr}</div>
+                            ${deleteBtnHtml}
+                        </div>
                     </div>
                     <div class="feedback-card-body">
                         <p class="feedback-card-content">${escapeHTML(item.message)}</p>
@@ -1125,6 +1176,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Event delegation for admin delete button on feedbackList
+    if (feedbackList) {
+        feedbackList.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.feedback-delete-btn');
+            if (deleteBtn) {
+                const feedbackId = deleteBtn.dataset.id;
+                if (feedbackId && confirm('Bạn có chắc chắn muốn xóa đánh giá này không?')) {
+                    let feedbacks = getFeedbacks();
+                    feedbacks = feedbacks.filter(item => item.id !== feedbackId);
+                    localStorage.setItem('portfolio_feedbacks', JSON.stringify(feedbacks));
+                    renderFeedbacks();
+                    showToast('Đã xóa đánh giá thành công.');
+                }
+            }
+        });
+    }
+
     // Initial render
     renderFeedbacks();
 
@@ -1147,17 +1215,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nameVal = document.getElementById('feedback-name').value;
                 const emailVal = document.getElementById('feedback-email').value;
                 const phoneVal = document.getElementById('feedback-phone').value;
+                const classVal = document.getElementById('feedback-class').value;
+                const schoolVal = document.getElementById('feedback-school').value;
                 const ratingVal = Number(document.querySelector('.star-rating input[name="rating"]:checked').value);
                 const messageVal = document.getElementById('feedback-message').value;
 
+                const user = getCurrentUser();
+
                 // Save feedback to storage & reload DOM
                 const newFeedbackObj = {
+                    id: Date.now().toString(),
                     name: nameVal,
                     email: emailVal,
                     phone: phoneVal,
+                    class: classVal,
+                    school: schoolVal,
                     rating: ratingVal,
                     message: messageVal,
-                    date: new Date().toLocaleDateString('vi-VN')
+                    date: new Date().toLocaleDateString('vi-VN'),
+                    verified: !!user
                 };
                 saveFeedback(newFeedbackObj);
 
@@ -1166,8 +1242,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.style.backgroundColor = '#10b981'; // green color
                 submitBtn.style.color = '#ffffff';
 
-                // Clear fields
-                feedbackForm.reset();
+                // Clear input fields
+                document.getElementById('feedback-phone').value = '';
+                document.getElementById('feedback-message').value = '';
+                const ratingChecked = document.querySelector('.star-rating input[name="rating"]:checked');
+                if (ratingChecked) ratingChecked.checked = false;
+
+                if (!user) {
+                    document.getElementById('feedback-name').value = '';
+                    document.getElementById('feedback-email').value = '';
+                    document.getElementById('feedback-class').value = '';
+                    document.getElementById('feedback-school').value = '';
+                }
+
                 if (feedbackRatingLabel) {
                     feedbackRatingLabel.textContent = 'Chọn đánh giá';
                     feedbackRatingLabel.classList.remove('show');
@@ -1389,4 +1476,365 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // ==========================================================================
+    // AUTHENTICATION SYSTEM (LOGIN / SIGNUP)
+    // ==========================================================================
+    
+    const authBtn = document.getElementById('auth-btn');
+    const userMenuWrapper = document.getElementById('user-menu-wrapper');
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    const logoutBtn = document.getElementById('logout-btn');
+    const authModal = document.getElementById('auth-modal');
+    const authModalClose = document.getElementById('auth-modal-close');
+    const authTabBtns = document.querySelectorAll('.auth-tab-btn');
+    const authFormPanels = document.querySelectorAll('.auth-form-panel');
+    const switchToTabLinks = document.querySelectorAll('.switch-to-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    
+    // Header user info elements
+    const headerUserAvatar = document.getElementById('header-user-avatar');
+    const headerUserName = document.getElementById('header-user-name');
+    const dropdownUserFullname = document.getElementById('dropdown-user-fullname');
+    const dropdownUserEmail = document.getElementById('dropdown-user-email');
+    const dropdownUserRole = document.getElementById('dropdown-user-role');
+
+    // Initialize default admin user if not exists
+    function initDefaultUsers() {
+        let users = localStorage.getItem('portfolio_users');
+        if (!users) {
+            const defaultUsers = [
+                {
+                    name: 'Bùi Trần Đức Thịnh',
+                    username: 'admin',
+                    email: 'btd.thinhoffice2012@gmail.com',
+                    password: 'admin', // Demo password
+                    classSchool: 'Admin | Owner',
+                    role: 'admin'
+                }
+            ];
+            localStorage.setItem('portfolio_users', JSON.stringify(defaultUsers));
+        } else {
+            try {
+                let userList = JSON.parse(users);
+                const adminExists = userList.some(u => u.username === 'admin');
+                if (!adminExists) {
+                    userList.push({
+                        name: 'Bùi Trần Đức Thịnh',
+                        username: 'admin',
+                        email: 'btd.thinhoffice2012@gmail.com',
+                        password: 'admin',
+                        classSchool: 'Admin | Owner',
+                        role: 'admin'
+                    });
+                    localStorage.setItem('portfolio_users', JSON.stringify(userList));
+                }
+            } catch (e) {
+                localStorage.removeItem('portfolio_users');
+                initDefaultUsers();
+            }
+        }
+    }
+    
+    initDefaultUsers();
+
+    // Get currently logged in user
+    function getCurrentUser() {
+        try {
+            return JSON.parse(localStorage.getItem('portfolio_session') || 'null');
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Update Page UI based on login status
+    function updateAuthUI() {
+        const user = getCurrentUser();
+        
+        if (user) {
+            // Hide guest button, show user profile menu
+            if (authBtn) authBtn.style.display = 'none';
+            if (userMenuWrapper) userMenuWrapper.style.display = 'block';
+            
+            // Set user profile info
+            const avatarChar = user.name.charAt(0).toUpperCase();
+            if (headerUserAvatar) {
+                headerUserAvatar.textContent = avatarChar;
+                headerUserAvatar.style.background = getAvatarGradient(avatarChar);
+            }
+            if (headerUserName) headerUserName.textContent = user.username;
+            if (dropdownUserFullname) dropdownUserFullname.textContent = user.name;
+            if (dropdownUserEmail) dropdownUserEmail.textContent = user.email;
+            
+            if (dropdownUserRole) {
+                if (user.role === 'admin') {
+                    dropdownUserRole.textContent = 'Quản trị viên';
+                    dropdownUserRole.style.background = 'rgba(239, 68, 68, 0.1)';
+                    dropdownUserRole.style.color = '#ef4444';
+                    dropdownUserRole.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                } else {
+                    dropdownUserRole.textContent = user.classSchool || 'Thành viên';
+                    dropdownUserRole.style.background = '';
+                    dropdownUserRole.style.color = '';
+                    dropdownUserRole.style.borderColor = '';
+                }
+            }
+            
+            // Pre-fill and lock feedback inputs
+            const fbName = document.getElementById('feedback-name');
+            const fbEmail = document.getElementById('feedback-email');
+            const fbClass = document.getElementById('feedback-class');
+            const fbSchool = document.getElementById('feedback-school');
+            
+            if (fbName) {
+                fbName.value = user.name;
+                fbName.readOnly = true;
+                fbName.style.opacity = '0.7';
+            }
+            if (fbEmail) {
+                fbEmail.value = user.email;
+                fbEmail.readOnly = true;
+                fbEmail.style.opacity = '0.7';
+            }
+            if (fbClass || fbSchool) {
+                if (user.classSchool && user.classSchool.includes(' - ')) {
+                    const parts = user.classSchool.split(' - ');
+                    if (fbClass && parts[0]) fbClass.value = parts[0];
+                    if (fbSchool && parts[1]) fbSchool.value = parts[1];
+                } else if (user.classSchool) {
+                    if (fbClass) fbClass.value = user.classSchool;
+                }
+            }
+        } else {
+            // Show guest button, hide user profile menu
+            if (authBtn) authBtn.style.display = 'flex';
+            if (userMenuWrapper) userMenuWrapper.style.display = 'none';
+            if (userDropdown) userDropdown.classList.remove('show');
+            if (userMenuWrapper) userMenuWrapper.classList.remove('active');
+            
+            // Unlock feedback inputs
+            const fbName = document.getElementById('feedback-name');
+            const fbEmail = document.getElementById('feedback-email');
+            
+            if (fbName) {
+                fbName.readOnly = false;
+                fbName.style.opacity = '';
+            }
+            if (fbEmail) {
+                fbEmail.readOnly = false;
+                fbEmail.style.opacity = '';
+            }
+        }
+        
+        // Re-render feedbacks to reflect verified badges and delete buttons
+        renderFeedbacks();
+    }
+
+    // Modal Open/Close handling
+    if (authBtn && authModal) {
+        authBtn.addEventListener('click', () => {
+            authModal.classList.add('show');
+            authModal.setAttribute('aria-hidden', 'false');
+            switchTab('login');
+        });
+    }
+
+    if (authModalClose && authModal) {
+        authModalClose.addEventListener('click', () => {
+            authModal.classList.remove('show');
+            authModal.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    // Close modal when clicking on overlay background
+    if (authModal) {
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.classList.remove('show');
+                authModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    }
+
+    // Close modal on Escape key
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && authModal && authModal.classList.contains('show')) {
+            authModal.classList.remove('show');
+            authModal.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    // Switch between Login and Register tabs
+    function switchTab(tabName) {
+        authTabBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+        
+        authFormPanels.forEach(panel => {
+            panel.classList.toggle('active', panel.id === `${tabName}-form`);
+        });
+        
+        // Reset forms when switching
+        if (tabName === 'login' && registerForm) registerForm.reset();
+        if (tabName === 'register' && loginForm) loginForm.reset();
+    }
+
+    authTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    switchToTabLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab(link.dataset.target);
+        });
+    });
+
+    // Toggle User Dropdown Menu
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+            userMenuWrapper.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking anywhere else
+        document.addEventListener('click', (e) => {
+            if (!userMenuWrapper.contains(e.target)) {
+                userDropdown.classList.remove('show');
+                userMenuWrapper.classList.remove('active');
+            }
+        });
+    }
+
+    // Logout handling
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('portfolio_session');
+            updateAuthUI();
+            
+            // Reset feedback form values
+            const fbForm = document.getElementById('feedbackForm');
+            if (fbForm) fbForm.reset();
+            
+            showToast('Đăng xuất thành công. Hẹn gặp lại bạn!');
+        });
+    }
+
+    // Register Form Submit
+    if (registerForm) {
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value.trim();
+            const username = document.getElementById('register-username').value.trim().toLowerCase();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const classSchool = document.getElementById('register-class-school').value.trim();
+            
+            // Validation
+            if (password.length < 6) {
+                showToast('Mật khẩu phải chứa ít nhất 6 ký tự!');
+                return;
+            }
+            
+            if (!/^[a-z0-9_.-]+$/.test(username)) {
+                showToast('Tên đăng nhập chỉ được chứa chữ cái viết thường, số, dấu gạch dưới, gạch ngang hoặc dấu chấm!');
+                return;
+            }
+
+            try {
+                let users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                
+                // Check if username already exists
+                const userExists = users.some(u => u.username === username);
+                if (userExists) {
+                    showToast('Tên đăng nhập đã được sử dụng! Vui lòng chọn tên khác.');
+                    return;
+                }
+                
+                // Check if email already exists
+                const emailExists = users.some(u => u.email === email);
+                if (emailExists) {
+                    showToast('Email đã được đăng ký! Vui lòng sử dụng email khác.');
+                    return;
+                }
+                
+                // Save new user
+                const newUser = {
+                    name,
+                    username,
+                    email,
+                    password,
+                    classSchool,
+                    role: 'member'
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('portfolio_users', JSON.stringify(users));
+                
+                showToast('Đăng ký tài khoản thành công! Hãy đăng nhập.');
+                registerForm.reset();
+                switchTab('login');
+                
+                // Pre-fill login username
+                const loginUserField = document.getElementById('login-username');
+                if (loginUserField) loginUserField.value = username;
+                
+            } catch (err) {
+                showToast('Đã xảy ra lỗi trong quá trình đăng ký!');
+                console.error(err);
+            }
+        });
+    }
+
+    // Login Form Submit
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const usernameOrEmail = document.getElementById('login-username').value.trim().toLowerCase();
+            const passwordVal = document.getElementById('login-password').value;
+            
+            try {
+                const users = JSON.parse(localStorage.getItem('portfolio_users') || '[]');
+                
+                // Look up user
+                const user = users.find(u => u.username === usernameOrEmail || u.email.toLowerCase() === usernameOrEmail);
+                
+                if (!user || user.password !== passwordVal) {
+                    showToast('Tên đăng nhập hoặc mật khẩu không chính xác!');
+                    return;
+                }
+                
+                // Save session
+                localStorage.setItem('portfolio_session', JSON.stringify({
+                    name: user.name,
+                    username: user.username,
+                    email: user.email,
+                    classSchool: user.classSchool,
+                    role: user.role
+                }));
+                
+                showToast(`Chào mừng ${user.name} đã quay trở lại!`);
+                loginForm.reset();
+                
+                if (authModal) {
+                    authModal.classList.remove('show');
+                    authModal.setAttribute('aria-hidden', 'true');
+                }
+                
+                updateAuthUI();
+                
+            } catch (err) {
+                showToast('Đã xảy ra lỗi trong quá trình đăng nhập!');
+                console.error(err);
+            }
+        });
+    }
+
+    // Run initial UI check
+    updateAuthUI();
 });
