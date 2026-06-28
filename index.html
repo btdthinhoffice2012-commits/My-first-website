@@ -11,7 +11,7 @@
     <meta property="og:image" content="avater1.jpeg">
     <meta name="twitter:card" content="summary_large_image">
     <title>Bùi Trần Đức Thịnh | Portfolio Cá Nhân Chuyên Nghiệp</title>
-    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230f2b46"/><text x="50%" y="57%" text-anchor="middle" font-size="30" font-family="Arial" font-weight="700" fill="%2338bdf8">ĐT</text></svg>'>
+    <link rel="icon" type="image/png" href="assets/logo.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
     <!-- Style CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark">
     <!-- Scroll Progress Bar -->
     <div id="scroll-progress"></div>
     <div class="interactive-bg" aria-hidden="true">
@@ -30,7 +30,7 @@
     <header class="header">
         <div class="container header-container">
             <a href="#" class="logo">
-                <span class="logo-dot"></span>Đức Thịnh<span>.</span>
+                <img src="assets/logo.png" alt="Đức Thịnh Logo" class="logo-img">
             </a>
             <nav class="nav">
                 <ul class="nav-list">
@@ -69,17 +69,17 @@
             <div class="decor-blob blob-2"></div>
             <div class="container hero-container">
                 <div class="hero-content">
-                    <span class="hero-subtitle">Xin chào, tôi là</span>
+                    <span class="hero-subtitle">Tech Portfolio / Linux Lab</span>
                     <h1 class="hero-title">Bùi Trần Đức Thịnh</h1>
-                    <h2 class="hero-role"><span class="typewriter" data-words='["Software Engineer", "Developer & Linux Fan", "Linux Enthusiast"]'></span><span class="cursor">|</span></h2>
+                    <h2 class="hero-role"><span class="typewriter" data-words='["C++ Learner", "Linux Workflow Builder", "Future Tech Developer"]'></span><span class="cursor">|</span></h2>
                     <p class="hero-desc">
-                        Mình xây dựng thói quen học công nghệ mỗi ngày qua C++, Linux và các dự án nhỏ. Mình thích hiểu cách hệ thống vận hành, tối ưu workflow và biến ý tưởng thành sản phẩm có thể dùng được.
+                        Mình xây dựng portfolio theo phong cách công nghệ: giao diện tối, animation tương tác, terminal workflow và các dự án học C++/Linux được trình bày như một command center cá nhân.
                     </p>
                     <div class="hero-badges" aria-label="Công nghệ yêu thích">
                         <span>C++</span>
                         <span>Linux</span>
                         <span>GitHub</span>
-                        <span>Open Source</span>
+                        <span>Terminal UI</span>
                     </div>
                     <div class="hero-actions">
                         <a href="#projects" class="btn btn-primary">
@@ -102,7 +102,7 @@
                         </div>
                         <div class="terminal-output">
                             <p><span class="terminal-prompt">$</span> <span id="terminal-command">whoami</span></p>
-                            <p id="terminal-response">student developer | Linux fan | C++ learner</p>
+                            <p id="terminal-response">tech portfolio operator | Linux fan | C++ learner</p>
                         </div>
                         <div class="terminal-actions" aria-label="Chạy lệnh nhanh">
                             <button type="button" class="terminal-command-btn active" data-command="whoami">whoami</button>
@@ -112,10 +112,41 @@
                         </div>
                     </div>
                 </div>
-                <div class="hero-image-wrapper">
-                    <div class="avatar-glow"></div>
-                    <div class="avatar-container">
+                <div class="hero-image-wrapper tech-hero-visual" aria-label="Bảng điều khiển công nghệ">
+                    <div class="tech-panel main-panel">
+                        <div class="panel-topline">
+                            <span>THINH.OS</span>
+                            <span>ONLINE</span>
+                        </div>
+                        <div class="holo-core">
+                            <div class="core-ring ring-a"></div>
+                            <div class="core-ring ring-b"></div>
+                            <div class="core-chip">C++</div>
+                        </div>
+                        <div class="signal-grid" aria-hidden="true">
+                            <span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div class="tech-panel profile-panel">
                         <img src="avater1.jpeg" alt="Bùi Trần Đức Thịnh Avatar" class="avatar-img">
+                        <div>
+                            <span>Developer Profile</span>
+                            <strong>Linux Fan</strong>
+                        </div>
+                    </div>
+                    <div class="tech-panel metric-panel metric-one">
+                        <span>Build Focus</span>
+                        <strong>Systems</strong>
+                    </div>
+                    <div class="tech-panel metric-panel metric-two">
+                        <span>Current Stack</span>
+                        <strong>HTML CSS JS</strong>
+                    </div>
+                    <div class="tech-panel metric-panel metric-three">
+                        <span>Mode</span>
+                        <strong>Learning Daily</strong>
                     </div>
                 </div>
             </div>
@@ -263,7 +294,7 @@
                                 <span>Workflow</span>
                             </div>
                             <h3>Linux Performance Lab</h3>
-                            <p>Bộ ghi chú và thử nghiệm cá nhân về tối ưu hệ thống, terminal workflow, shell script và cách setup môi trường làm việc nhanh hơn.</p>
+                            <p>Không gian thử nghiệm terminal, shell script và tối ưu hệ thống, trình bày như một phòng lab nhỏ cho Linux workflow.</p>
                             <div class="project-actions">
                                 <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
                                 <a href="#contact">Trao đổi</a>
@@ -285,7 +316,7 @@
                                 <span>Algorithms</span>
                             </div>
                             <h3>C++ Practice Engine</h3>
-                            <p>Không gian luyện tư duy lập trình với bài tập nhỏ, cấu trúc dữ liệu và thuật toán cơ bản để cải thiện tốc độ giải quyết vấn đề.</p>
+                            <p>Bộ bài luyện thuật toán và cấu trúc dữ liệu, tập trung vào tư duy giải quyết vấn đề và cách debug có hệ thống.</p>
                             <div class="project-actions">
                                 <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
                                 <a href="#skills">Kỹ năng</a>
@@ -311,8 +342,8 @@
                                 <span>CSS</span>
                                 <span>JS</span>
                             </div>
-                            <h3>Interactive Portfolio</h3>
-                            <p>Website cá nhân có dark mode, animation nền tương tác, hiệu ứng reveal, typewriter và form liên hệ mô phỏng.</p>
+                            <h3>Tech Command Portfolio</h3>
+                            <p>Website cá nhân mang vibe công nghệ với nền canvas, terminal mini, reveal animation, setup video và các panel tương tác.</p>
                             <div class="project-actions">
                                 <a href="#hero">Demo</a>
                                 <a href="#contact">Liên hệ</a>
@@ -327,9 +358,9 @@
         <section id="setup" class="gear-hero-section reveal">
             <div class="container gear-hero-grid">
                 <div class="gear-hero-copy">
-                    <span class="section-subtitle">My Daily Setup</span>
-                    <h2 class="gear-title" style="font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; line-height: 1.25; color: var(--color-text-primary); margin-bottom: 1.5rem; letter-spacing: -0.03em;">Góc công nghệ mình đang dùng để học code, Linux và build project.</h2>
-                    <p>Không phải setup đắt nhất, nhưng đây là combo đủ thực dụng: màn rộng để đọc code, laptop để thử nghiệm, bàn phím gõ lâu thoải mái, chuột nhẹ và tai nghe rõ chi tiết.</p>
+                    <span class="section-subtitle">My Tech Setup</span>
+                    <h2 class="gear-title">Trạm học công nghệ để code, chạy Linux và build project.</h2>
+                    <p>Setup này là command station hằng ngày của mình: màn rộng cho docs và preview, laptop để thử nghiệm, bàn phím/chuột cho workflow nhanh, tai nghe để tập trung khi debug.</p>
                     <div class="gear-hero-actions">
                         <a href="#gear-list" class="btn btn-primary">Xem thiết bị</a>
                         <a href="#hero" class="btn btn-secondary">Về đầu trang</a>
@@ -361,83 +392,93 @@
                 </div>
                 <div class="gear-grid">
                     <article class="gear-card tilt-card">
-                        <div class="gear-media monitor-media">
-                            <img src="assets/gear/final/philips-271v8-transparent.png" alt="Ảnh Philips 271V8 nền trong suốt" loading="lazy">
-                        </div>
-                        <div class="gear-content">
-                            <span class="gear-kicker">Display</span>
-                            <h3>Philips 271V8</h3>
-                            <p>Màn hình 27 inch dùng để đọc tài liệu, chia đôi cửa sổ code và terminal. Điểm mạnh là không gian hiển thị rộng, hợp học lâu và làm việc đa nhiệm.</p>
-                            <ul>
-                                <li>Không gian rộng cho code + docs</li>
-                                <li>Phù hợp workflow nhiều cửa sổ</li>
-                                <li>Setup gọn cho bàn học</li>
-                            </ul>
-                        </div>
+                        <a href="https://www.philips.com.vn/c-p/271V8LB_74/monitor-lcd-monitor" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                            <div class="gear-media monitor-media">
+                                <img src="assets/gear/final/philips-271v8-transparent.png" alt="Ảnh Philips 271V8 nền trong suốt" loading="lazy">
+                            </div>
+                            <div class="gear-content">
+                                <span class="gear-kicker">Display</span>
+                                <h3>Philips 271V8 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></h3>
+                                <p>Màn hình 27 inch dùng để đọc tài liệu, chia đôi cửa sổ code và terminal. Điểm mạnh là không gian hiển thị rộng, hợp học lâu và làm việc đa nhiệm.</p>
+                                <ul>
+                                    <li>Không gian rộng cho code + docs</li>
+                                    <li>Phù hợp workflow nhiều cửa sổ</li>
+                                    <li>Setup gọn cho bàn học</li>
+                                </ul>
+                            </div>
+                        </a>
                     </article>
 
                     <article class="gear-card tilt-card featured-gear">
-                        <div class="gear-media laptop-media">
-                            <img src="assets/gear/final/msi-gf63-9rcx-transparent.png" alt="Ảnh MSI GF63 9RCX nền trong suốt" loading="lazy">
-                        </div>
-                        <div class="gear-content">
-                            <span class="gear-kicker">Main Machine</span>
-                            <h3>MSI GF63 9RCX</h3>
-                            <p>Máy chính để học lập trình, chạy Linux, thử tool mới và làm web. Thiết kế gaming mỏng giúp dễ mang theo nhưng vẫn đủ lực cho nhu cầu học tập.</p>
-                            <ul>
-                                <li>Máy chính cho C++ và web</li>
-                                <li>Phù hợp thử Linux/workflow</li>
-                                <li>Dùng để build và test project</li>
-                            </ul>
-                        </div>
+                        <a href="https://www.phucanh.vn/review-msi-gf63-9rcx-645vn-chiec-laptop-gaming-gon-nhe-nhat-trong-phan-khuc-20-30-trieu-dong.html" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                            <div class="gear-media laptop-media">
+                                <img src="assets/gear/final/msi-gf63-9rcx-transparent.png" alt="Ảnh MSI GF63 9RCX nền trong suốt" loading="lazy">
+                            </div>
+                            <div class="gear-content">
+                                <span class="gear-kicker">Main Machine</span>
+                                <h3>MSI GF63 9RCX <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></h3>
+                                <p>Máy chính để học lập trình, chạy Linux, thử tool mới và làm web. Thiết kế gaming mỏng giúp dễ mang theo nhưng vẫn đủ lực cho nhu cầu học tập.</p>
+                                <ul>
+                                    <li>Máy chính cho C++ và web</li>
+                                    <li>Phù hợp thử Linux/workflow</li>
+                                    <li>Dùng để build và test project</li>
+                                </ul>
+                            </div>
+                        </a>
                     </article>
 
                     <article class="gear-card tilt-card">
-                        <div class="gear-media keyboard-media">
-                            <img src="assets/gear/final/aula-au75-transparent.png" alt="Ảnh bàn phím AULA AU75 bản màu đen nền trong suốt" loading="lazy">
-                        </div>
-                        <div class="gear-content">
-                            <span class="gear-kicker">Keyboard</span>
-                            <h3>AULA AU75</h3>
-                            <p>Bàn phím gõ hằng ngày, layout gọn nhưng vẫn đủ phím cần thiết. Hợp viết code, chat, ghi chú và dùng shortcut thường xuyên.</p>
-                            <ul>
-                                <li>Layout gọn, tiết kiệm diện tích</li>
-                                <li>Cảm giác gõ phù hợp dùng lâu</li>
-                                <li>Dễ hợp với setup tối giản</li>
-                            </ul>
-                        </div>
+                        <a href="https://gearvn.com/products/ban-phim-aula-au75-tm-tim-be-do-star-vector-switch" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                            <div class="gear-media keyboard-media">
+                                <img src="assets/gear/final/aula-au75-transparent.png" alt="Ảnh bàn phím AULA AU75 bản màu đen nền trong suốt" loading="lazy">
+                            </div>
+                            <div class="gear-content">
+                                <span class="gear-kicker">Keyboard</span>
+                                <h3>AULA AU75 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></h3>
+                                <p>Bàn phím gõ hằng ngày, layout gọn nhưng vẫn đủ phím cần thiết. Hợp viết code, chat, ghi chú và dùng shortcut thường xuyên.</p>
+                                <ul>
+                                    <li>Layout gọn, tiết kiệm diện tích</li>
+                                    <li>Cảm giác gõ phù hợp dùng lâu</li>
+                                    <li>Dễ hợp với setup tối giản</li>
+                                </ul>
+                            </div>
+                        </a>
                     </article>
 
                     <article class="gear-card tilt-card">
-                        <div class="gear-media mouse-media">
-                            <img src="assets/gear/final/lingbao-m5-pro-max-transparent.png" alt="Ảnh chuột Lingbao M5 Pro Max màu đen nền trong suốt" loading="lazy">
-                        </div>
-                        <div class="gear-content">
-                            <span class="gear-kicker">Mouse</span>
-                            <h3>Lingbao M5 Pro Max</h3>
-                            <p>Chuột nhẹ, phản hồi nhanh, hợp thao tác nhiều giữa editor, browser và terminal. Một món nhỏ nhưng ảnh hưởng khá nhiều đến cảm giác làm việc.</p>
-                            <ul>
-                                <li>Di chuyển nhanh, gọn tay</li>
-                                <li>Hợp thao tác liên tục</li>
-                                <li>Phối tốt với bàn phím compact</li>
-                            </ul>
-                        </div>
+                        <a href="https://gearshop.vn/chuot-lingbao-m5-pro-dentrang" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                            <div class="gear-media mouse-media">
+                                <img src="assets/gear/final/lingbao-m5-pro-max-transparent.png" alt="Ảnh chuột Lingbao M5 Pro Max màu đen nền trong suốt" loading="lazy">
+                            </div>
+                            <div class="gear-content">
+                                <span class="gear-kicker">Mouse</span>
+                                <h3>Lingbao M5 Pro Max <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></h3>
+                                <p>Chuột nhẹ, phản hồi nhanh, hợp thao tác nhiều giữa editor, browser và terminal. Một món nhỏ nhưng ảnh hưởng khá nhiều đến cảm giác làm việc.</p>
+                                <ul>
+                                    <li>Di chuyển nhanh, gọn tay</li>
+                                    <li>Hợp thao tác liên tục</li>
+                                    <li>Phối tốt với bàn phím compact</li>
+                                </ul>
+                            </div>
+                        </a>
                     </article>
 
                     <article class="gear-card tilt-card">
-                        <div class="gear-media audio-media">
-                            <img src="assets/gear/final/kz-edx-pro-x-transparent.png" alt="Ảnh KZ EDX Pro X nền trong suốt" loading="lazy">
-                        </div>
-                        <div class="gear-content">
-                            <span class="gear-kicker">Audio</span>
-                            <h3>KZ EDX Pro X</h3>
-                            <p>Tai nghe in-ear để nghe nhạc, xem video học và tập trung khi code. Gọn, dễ mang theo, đủ rõ để dùng trong nhiều tình huống hằng ngày.</p>
-                            <ul>
-                                <li>Gọn nhẹ, tiện mang theo</li>
-                                <li>Phù hợp học và giải trí</li>
-                                <li>Cách âm tốt hơn loa laptop</li>
-                            </ul>
-                        </div>
+                        <a href="https://geekhunk.com/kz-edx-pro-x-review/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                            <div class="gear-media audio-media">
+                                <img src="assets/gear/final/kz-edx-pro-x-transparent.png" alt="Ảnh KZ EDX Pro X nền trong suốt" loading="lazy">
+                            </div>
+                            <div class="gear-content">
+                                <span class="gear-kicker">Audio</span>
+                                <h3>KZ EDX Pro X <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.7;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></h3>
+                                <p>Tai nghe in-ear để nghe nhạc, xem video học và tập trung khi code. Gọn, dễ mang theo, đủ rõ để dùng trong nhiều tình huống hằng ngày.</p>
+                                <ul>
+                                    <li>Gọn nhẹ, tiện mang theo</li>
+                                    <li>Phù hợp học và giải trí</li>
+                                    <li>Cách âm tốt hơn loa laptop</li>
+                                </ul>
+                            </div>
+                        </a>
                     </article>
                 </div>
             </div>
@@ -527,6 +568,15 @@
                                     <a href="https://github.com/btdthinhoffice2012-commits" target="_blank" rel="noopener noreferrer">github.com/btdthinhoffice2012-commits</a>
                                 </div>
                             </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span>TikTok</span>
+                                    <a href="https://www.tiktok.com/@thinh122012" target="_blank" rel="noopener noreferrer">tiktok.com/@thinh122012</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <form class="contact-form" id="contactForm">
@@ -553,7 +603,7 @@
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-brand">
-                <a href="#" class="logo"><span class="logo-dot"></span>Đức Thịnh<span>.</span></a>
+                <a href="#" class="logo"><img src="assets/logo.png" alt="Đức Thịnh Logo" class="logo-img"></a>
                 <p>Thiết kế & Lập trình bởi Bùi Trần Đức Thịnh © 2026. Mọi quyền được bảo lưu.</p>
                 <div class="footer-status">
                     <span></span>
@@ -583,6 +633,9 @@
                 </a>
                 <a href="https://x.com/Thinhoffice2012" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" class="social-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M20 4L7.5 20"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@thinh122012" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="social-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
                 </a>
             </div>
         </div>

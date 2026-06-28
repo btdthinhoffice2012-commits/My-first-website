@@ -333,7 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    if (currentTheme === 'dark' || (!currentTheme && systemPrefersDark)) {
+    if (currentTheme === 'light') {
+        document.body.classList.remove('dark');
+    } else if (currentTheme === 'dark' || !currentTheme || systemPrefersDark) {
         document.body.classList.add('dark');
     }
     
@@ -366,9 +368,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const sections = document.querySelectorAll('section');
     const scrollToTopBtn = document.getElementById('scroll-to-top');
     const scrollProgress = document.getElementById('scroll-progress');
+    const sectionHud = document.createElement('div');
+    const sectionMeta = Array.from(sections).map((section, index) => {
+        const title = section.querySelector('.section-title, .gear-title, .hero-title')?.textContent?.trim() || 'Portfolio';
+        const kicker = section.querySelector('.section-subtitle, .hero-subtitle')?.textContent?.trim() || 'Tech Scene';
+        const id = section.id || `scene-${index + 1}`;
+
+        section.dataset.scene = String(index + 1).padStart(2, '0');
+        section.style.setProperty('--section-progress', '0');
+        section.style.setProperty('--section-shift', '42px');
+        section.style.setProperty('--section-scale', '0.975');
+
+        return { id, title, kicker, section };
+    });
+
+    sectionHud.className = 'scroll-hud';
+    sectionHud.innerHTML = `
+        <span class="scroll-hud-kicker">Scene 01</span>
+        <strong class="scroll-hud-title">Portfolio</strong>
+        <span class="scroll-hud-bar"><span></span></span>
+    `;
+    document.body.appendChild(sectionHud);
+    const hudKicker = sectionHud.querySelector('.scroll-hud-kicker');
+    const hudTitle = sectionHud.querySelector('.scroll-hud-title');
+    const hudBar = sectionHud.querySelector('.scroll-hud-bar span');
     
-    window.addEventListener('scroll', () => {
+    let lastScrollPos = window.scrollY;
+    let tickingScroll = false;
+
+    const updateScrollEffects = () => {
         const scrollPos = window.scrollY;
+        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = totalHeight > 0 ? (scrollPos / totalHeight) * 100 : 0;
+
+        document.documentElement.style.setProperty('--scroll-progress', `${progress}%`);
+        document.documentElement.style.setProperty('--scroll-y', `${scrollPos}px`);
+        document.body.classList.toggle('scrolling-down', scrollPos > lastScrollPos && scrollPos > 80);
+        document.body.classList.toggle('scrolling-up', scrollPos < lastScrollPos && scrollPos > 80);
         
         // Header height transition on scroll
         if (scrollPos > 50) {
@@ -378,11 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Scroll progress bar indicator
-        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-        if (totalHeight > 0) {
-            const progress = (scrollPos / totalHeight) * 100;
-            scrollProgress.style.width = `${progress}%`;
-        }
+        scrollProgress.style.width = `${progress}%`;
         
         // Scroll To Top button visibility
         if (scrollPos > 300) {
@@ -391,15 +423,44 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollToTopBtn.classList.remove('show');
         }
         
-        // Section active highlights
+        // Section active highlights and cinematic scroll progress
         let currentSectionId = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - 120; // offset for sticky header
+        let currentScene = sectionMeta[0];
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        sectionMeta.forEach(scene => {
+            const { section } = scene;
+            const rect = section.getBoundingClientRect();
+            const sectionTop = scrollPos + rect.top - 120; // offset for sticky header
             const sectionHeight = section.offsetHeight;
+            const rawProgress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+            const sectionProgress = Math.min(1, Math.max(0, rawProgress));
+            const distanceFromCenter = Math.abs((rect.top + rect.height / 2) - window.innerHeight / 2);
+            const shift = (0.5 - sectionProgress) * 84;
+            const scale = 0.972 + Math.sin(sectionProgress * Math.PI) * 0.028;
+
+            section.style.setProperty('--section-progress', sectionProgress.toFixed(4));
+            section.style.setProperty('--section-shift', `${shift.toFixed(2)}px`);
+            section.style.setProperty('--section-scale', scale.toFixed(4));
+            section.classList.toggle('section-focus', sectionProgress > 0.18 && sectionProgress < 0.86);
+
+            if (distanceFromCenter < closestDistance) {
+                closestDistance = distanceFromCenter;
+                currentScene = scene;
+            }
+
             if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
-                currentSectionId = section.getAttribute('id');
+                currentSectionId = scene.id;
             }
         });
+
+        if (currentScene) {
+            const sceneIndex = String(sectionMeta.indexOf(currentScene) + 1).padStart(2, '0');
+            document.documentElement.style.setProperty('--scene-progress', currentScene.section.style.getPropertyValue('--section-progress'));
+            hudKicker.textContent = `Scene ${sceneIndex} / ${String(sectionMeta.length).padStart(2, '0')}`;
+            hudTitle.textContent = currentScene.kicker;
+            hudBar.style.width = `${Number(currentScene.section.style.getPropertyValue('--section-progress')) * 100}%`;
+        }
         
         if (currentSectionId) {
             const matchingLink = Array.from(navLinks).find(link => link.getAttribute('href') === `#${currentSectionId}`);
@@ -411,7 +472,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 matchingLink.classList.add('active');
             }
         }
-    });
+
+        lastScrollPos = scrollPos;
+        tickingScroll = false;
+    };
+
+    window.addEventListener('scroll', () => {
+        if (!tickingScroll) {
+            window.requestAnimationFrame(updateScrollEffects);
+            tickingScroll = true;
+        }
+    }, { passive: true });
+
+    updateScrollEffects();
     
     // Scroll to Top action
     scrollToTopBtn.addEventListener('click', () => {
@@ -423,17 +496,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Reveal Elements on Scroll (Intersection Observer) ---
     const revealElements = document.querySelectorAll('.reveal');
+    const revealChildren = document.querySelectorAll('.skill-card, .project-card, .gear-card, .stat-card, .timeline-item, .flow-steps div, .contact-item');
+
+    revealChildren.forEach((child, index) => {
+        child.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
+        child.classList.add('reveal-child');
+    });
     
     const revealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
-                observer.unobserve(entry.target); // Stop observing after reveal
+                entry.target.classList.add('section-in-view');
+            } else {
+                entry.target.classList.remove('active');
+                entry.target.classList.remove('section-in-view');
             }
         });
     }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.18,
+        rootMargin: '-8% 0px -12% 0px'
     });
     
     revealElements.forEach(element => {
@@ -473,9 +555,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const terminalResponse = document.getElementById('terminal-response');
     const terminalButtons = document.querySelectorAll('.terminal-command-btn');
     const terminalResponses = {
-        whoami: 'student developer | Linux fan | C++ learner',
-        skills: 'C++ fundamentals, Linux workflow, Git/GitHub, debugging, system tuning',
-        projects: '3 active builds: Linux lab, C++ practice engine, interactive portfolio',
+        whoami: 'tech portfolio operator | Linux fan | C++ learner',
+        skills: 'C++ fundamentals, Linux workflow, terminal UI, Git/GitHub, debugging',
+        projects: '3 active builds: Linux lab, C++ practice engine, tech command portfolio',
         contact: 'email: btd.thinhoffice2012@gmail.com | zalo: 0967505247'
     };
     let terminalTypingTimer;
@@ -576,7 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Mock server timeout
             setTimeout(() => {
                 // Success feedback
-                submitBtn.textContent = 'Gửi thành công! ✓';
+                submitBtn.textContent = 'Gửi thành công!';
                 submitBtn.style.backgroundColor = '#10b981'; // green color
                 submitBtn.style.color = '#ffffff';
                 
@@ -662,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setupVideo.play().catch(err => console.log('Autoplay issue:', err));
             } else if (setupVideo.muted) {
                 setupVideo.muted = false;
-                showToast('Đã bật âm thanh video! 🔊');
+                showToast('Đã bật âm thanh video.');
             } else {
                 setupVideo.pause();
             }
