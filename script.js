@@ -9,6 +9,25 @@ if (typeof window.supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_UR
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
+const MEDIA_CDN_CONFIG = window.PORTFOLIO_MEDIA_CDN || {};
+const mediaCdnCloudName = (MEDIA_CDN_CONFIG.cloudName || '').trim();
+const mediaCdnFolder = (MEDIA_CDN_CONFIG.folder || '').trim().replace(/^\/+|\/+$/g, '');
+
+const resolveMediaSrc = (src) => {
+    if (!src || !mediaCdnCloudName || !src.startsWith('assets/music/')) {
+        return src;
+    }
+
+    const mediaPath = src.replace(/^assets\/music\//, '');
+    const publicPath = mediaPath
+        .split('/')
+        .map(segment => encodeURIComponent(decodeURIComponent(segment)))
+        .join('/');
+    const folderPath = mediaCdnFolder ? `${mediaCdnFolder}/` : '';
+
+    return `https://res.cloudinary.com/${mediaCdnCloudName}/video/upload/${folderPath}${publicPath}`;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Interactive Mouse-follow Background ---
     const interactiveBg = document.querySelector('.interactive-bg');
@@ -1635,42 +1654,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.mtp-station').forEach(station => {
         const currentTitle = station.querySelector('.player-title');
-        const openYoutube = station.querySelector('.open-current-link');
-        const playCurrent = station.querySelector('.mtp-play-overlay');
-        const cover = station.querySelector('.mtp-frame img');
+        const openMedia = station.querySelector('.open-current-link');
+        const playAll = station.querySelector('.play-all-link');
+        const player = station.querySelector('.mtp-video');
         const tracks = station.querySelectorAll('.mtp-track');
+        let currentTrackIndex = 0;
 
         if (!currentTitle || !tracks.length) return;
 
         const loadMtpTrack = (track, autoplay = true) => {
-            const youtubeUrl = track.dataset.youtubeUrl;
-            const videoId = getYoutubeVideoId(youtubeUrl);
-
-            if (!videoId) return;
+            const mediaSrc = resolveMediaSrc(track.dataset.mediaSrc);
 
             currentTitle.textContent = track.dataset.title || track.textContent.trim();
 
-            if (openYoutube) {
-                openYoutube.href = youtubeUrl;
+            if (openMedia && mediaSrc) {
+                openMedia.href = mediaSrc;
             }
 
-            if (playCurrent) {
-                playCurrent.href = youtubeUrl;
-            }
+            if (player && mediaSrc) {
+                if (player.getAttribute('src') !== mediaSrc) {
+                    player.src = mediaSrc;
+                    player.load();
+                }
 
-            if (cover) {
-                cover.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                cover.alt = `Thumbnail bài ${currentTitle.textContent}`;
+                if (autoplay) {
+                    player.play().catch(() => {});
+                }
             }
 
             tracks.forEach(item => {
                 item.classList.toggle('active', item === track);
             });
+
+            currentTrackIndex = Array.from(tracks).indexOf(track);
         };
 
         tracks.forEach(track => {
             track.addEventListener('click', () => loadMtpTrack(track));
         });
+
+        if (playAll) {
+            playAll.addEventListener('click', () => loadMtpTrack(tracks[0], true));
+        }
+
+        if (player) {
+            player.addEventListener('ended', () => {
+                const nextTrack = tracks[currentTrackIndex + 1];
+                if (nextTrack) {
+                    loadMtpTrack(nextTrack, true);
+                }
+            });
+        }
 
         loadMtpTrack(station.querySelector('.mtp-track.active') || tracks[0], false);
     });
@@ -2285,9 +2319,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Validate size (10MB max)
-            if (file.size > 10 * 1024 * 1024) {
-                showToast('Dung lượng ảnh vượt quá 10MB! Vui lòng chọn ảnh nhẹ hơn.');
+            // Validate size (1MB max)
+            if (file.size > 1 * 1024 * 1024) {
+                showToast('Dung lượng ảnh vượt quá 1MB! Vui lòng chọn ảnh nhẹ hơn.');
                 profileAvatarInput.value = '';
                 return;
             }

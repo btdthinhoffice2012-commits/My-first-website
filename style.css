@@ -4121,6 +4121,20 @@ body::after {
     transition: transform 0.45s ease, filter 0.45s ease;
 }
 
+.mtp-frame video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: contain;
+    background: #000;
+}
+
+.mtp-frame:has(video)::after {
+    display: none;
+}
+
 .mtp-launcher:hover img {
     transform: scale(1.04);
     filter: saturate(1.2) contrast(1.08);
@@ -4187,6 +4201,12 @@ body::after {
     color: #f8fafc;
     font-size: 0.78rem;
     font-weight: 800;
+    font-family: inherit;
+    text-decoration: none;
+}
+
+button.mtp-youtube-link {
+    cursor: pointer;
 }
 
 .mtp-source-link {
@@ -4211,42 +4231,72 @@ body::after {
 .hobbies-section {
     position: relative;
     min-height: min(900px, 100vh);
-    padding: 6rem 0;
+    padding: 6rem 0 7rem;
     overflow: hidden;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.035)),
         rgba(7, 16, 20, 0.72);
 }
 
+.hobbies-section .container {
+    max-width: 1320px;
+}
+
 .hobbies-grid {
     display: grid;
-    grid-template-columns: minmax(240px, 0.34fr) minmax(0, 1.66fr);
-    gap: 3rem;
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 2.75rem;
+    align-items: stretch;
 }
 
 .music-stations {
     display: grid;
-    grid-template-columns: repeat(3, minmax(290px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+    gap: 1.6rem;
 }
 
 .hobbies-copy .section-title {
-    text-align: left;
+    text-align: center;
 }
 
 .hobbies-copy p {
     color: var(--text-secondary);
     line-height: 1.85;
     font-size: 1.05rem;
-    max-width: 560px;
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .hobbies-section .mtp-station {
     max-width: none;
     margin-top: 0;
     min-width: 0;
-    padding: 1.15rem;
+    padding: 1.35rem;
+}
+
+.hobbies-section .player-title {
+    min-height: 2.15rem;
+    margin-top: 0.85rem;
+    margin-bottom: 0.15rem;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+}
+
+.hobbies-section .mtp-frame {
+    margin: 1rem 0 1.05rem;
+}
+
+.hobbies-section .mtp-youtube-link,
+.hobbies-section .mtp-source-link {
+    min-height: 38px;
+    margin-right: 0.45rem;
+    margin-bottom: 0.95rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+.hobbies-section .mtp-source-link {
+    margin-left: 0;
 }
 
 .hobbies-section::before {
@@ -4316,7 +4366,6 @@ body::after {
 
 @media (max-width: 1024px) {
     .hobbies-grid {
-        grid-template-columns: 1fr;
         gap: 2.5rem;
     }
 
@@ -4343,28 +4392,57 @@ body::after {
 
     .music-stations {
         grid-template-columns: 1fr;
+        gap: 1.35rem;
+    }
+
+    .hobbies-section .mtp-station {
+        padding: 1rem;
+    }
+
+    .hobbies-section .mtp-youtube-link,
+    .hobbies-section .mtp-source-link {
+        width: 100%;
+        margin-right: 0;
+        justify-content: center;
     }
 }
 
 .mtp-track-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
-    overflow: visible;
-    padding-bottom: 0;
+    gap: 0.65rem;
+    max-height: 13.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 0.25rem;
+    padding-bottom: 0.1rem;
     scrollbar-width: thin;
     scrollbar-color: rgba(121, 238, 255, 0.5) rgba(255, 255, 255, 0.08);
 }
 
+.mtp-track-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mtp-track-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+}
+
+.mtp-track-list::-webkit-scrollbar-thumb {
+    background: rgba(121, 238, 255, 0.5);
+    border-radius: 999px;
+}
+
 .mtp-track {
-    flex: 1 1 auto;
-    min-height: 34px;
-    padding: 0.45rem 0.7rem;
+    flex: 1 1 128px;
+    min-height: 40px;
+    padding: 0.55rem 0.78rem;
     border-radius: 8px;
     border: 1px solid rgba(121, 238, 255, 0.18);
     background: rgba(255, 255, 255, 0.045);
     color: var(--text-secondary);
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 800;
     cursor: pointer;
     transition: var(--transition);
@@ -5425,4 +5503,3 @@ body.dark .reply-textarea:focus {
     object-fit: cover;
     display: block;
 }
-
